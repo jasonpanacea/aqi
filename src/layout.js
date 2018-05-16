@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Redirect, HashRouter, Switch, withRouter, Link } 
 import { Layout, Menu, Icon } from 'antd';
 import FirstComponent from './components/FirstComponent';
 import SecondComponent from './components/SecondComponent';
+import ThirdComponent from './components/ThirdComponent';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -23,17 +24,14 @@ class Frame extends React.Component {
               defaultOpenKeys={['sub1']}
               style={{ height: '100%', borderRight: 0 }}
             >
-              <SubMenu key="sub1" title={<span><Icon type="user" />subnav 1</span>}>
-                <Menu.Item key="1"><Link to="/first">first</Link></Menu.Item>
-                <Menu.Item key="2"><Link to="/second">second</Link></Menu.Item>
-                <Menu.Item key="3">option3</Menu.Item>
-                <Menu.Item key="4">option4</Menu.Item>
+              <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
+                <Menu.Item key="1"><Link to="/first">全国分布</Link></Menu.Item>
+                <Menu.Item key="2"><Link to="/second">省份分布</Link></Menu.Item>
+                <Menu.Item key="3"><Link to="/third">重点城市</Link></Menu.Item>
               </SubMenu>
-              <SubMenu key="sub2" title={<span><Icon type="laptop" />subnav 2</span>}>
-                <Menu.Item key="5">option5</Menu.Item>
-                <Menu.Item key="6">option6</Menu.Item>
-                <Menu.Item key="7">option7</Menu.Item>
-                <Menu.Item key="8">option8</Menu.Item>
+              <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
+                <Menu.Item key="4">城市排名</Menu.Item>
+                <Menu.Item key="5">城市对比</Menu.Item>
               </SubMenu>
             </Menu>
           </Sider>
@@ -44,6 +42,7 @@ class Frame extends React.Component {
                 <Route path="/" exact component={FirstComponent} />
                 <Route path="/first" component={FirstComponent} />
                 <Route path="/second" component={SecondComponent} />
+                <Route path="/third" component={ThirdComponent} />
               </Switch>
               
             </Content>
