@@ -4,6 +4,8 @@ import { Layout, Menu, Icon } from 'antd';
 import FirstComponent from './components/FirstComponent';
 import SecondComponent from './components/SecondComponent';
 import ThirdComponent from './components/ThirdComponent';
+import FourthComponent from './components/FourthComponent';
+import FifthComponent from './components/FifthComponent';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -28,10 +30,11 @@ class Frame extends React.Component {
                 <Menu.Item key="1"><Link to="/first">全国分布</Link></Menu.Item>
                 <Menu.Item key="2"><Link to="/second">省份分布</Link></Menu.Item>
                 <Menu.Item key="3"><Link to="/third">重点城市</Link></Menu.Item>
+                <Menu.Item key="5"><Link to="/fourth">省份分布</Link></Menu.Item>
               </SubMenu>
               <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
-                <Menu.Item key="4">城市排名</Menu.Item>
-                <Menu.Item key="5">城市对比</Menu.Item>
+                <Menu.Item key="6">城市排名</Menu.Item>
+                <Menu.Item key="7"><Link to="/fifth">城市对比</Link></Menu.Item>
               </SubMenu>
             </Menu>
           </Sider>
@@ -43,6 +46,8 @@ class Frame extends React.Component {
                 <Route path="/first" component={FirstComponent} />
                 <Route path="/second" component={SecondComponent} />
                 <Route path="/third" component={ThirdComponent} />
+                <Route path="/fourth" component={FourthComponent} />
+                <Route path="/fifth" component={FifthComponent} />
               </Switch>
               
             </Content>

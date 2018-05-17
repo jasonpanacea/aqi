@@ -4,9 +4,6 @@ import ReactEcharts from 'echarts-for-react';
 require('echarts/map/js/china.js');
 
 export default class FirstComponent extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   getOption = () => {
     const geoCoordMap = {
