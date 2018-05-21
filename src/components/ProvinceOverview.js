@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
+import { withRouter } from 'react-router-dom';
 
-import 'echarts/map/js/province/heilongjiang.js';
+import 'echarts/map/js/china.js';
 
-export default class FirstComponent extends React.Component {
+@withRouter
+export default class ProvinceOverview extends React.Component {
 
   getOption = () => {
     const option = {
@@ -46,17 +48,15 @@ export default class FirstComponent extends React.Component {
         {
           name: 'pm2.5',
           type: 'map',
-          mapType: '黑龙江', 
+          mapType: 'china', 
           itemStyle: {
             normal: { label: { show: true } },
             emphasis: { label: { show: true } },
           },
           data: [
-            { name: '牡丹江市', value: 20057.34 },
-            { name: '哈尔滨市', value: 15477.48 },
-            { name: '齐齐哈尔市', value: 31686.1 },
-            { name: '佳木斯市', value: 6992.6 },
-            { name: '大庆市', value: 44045.49 },
+            { name: '黑龙江', value: 20057.34 },
+            { name: '吉林', value: 15477.48 },
+            { name: '辽宁', value: 31686.1 },
           ],
         },
       ],
@@ -65,6 +65,7 @@ export default class FirstComponent extends React.Component {
   }
   onClick = (params) => {
     console.log(params);
+    this.props.history.push(`/province_detail/${params.name}`);
   }
   render() {
     const onEvents = {

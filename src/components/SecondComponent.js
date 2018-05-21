@@ -299,7 +299,14 @@ export default class SecondComponent extends React.Component {
     return option;
   };
 
+  onClick = (params) => {
+    console.log(params);
+  }
+
   render() {
+    const onEvents = {
+      click: this.onClick,
+    };
     return (
       <div className="examples">
         <div className="parent">
@@ -309,6 +316,7 @@ export default class SecondComponent extends React.Component {
             option={this.getOption()}
             style={{ height: '500px', width: '100%' }}
             className="react_for_echarts"
+            onEvents={onEvents}
           />
         </div>
       </div>

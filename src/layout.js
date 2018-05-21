@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Route, Redirect, HashRouter, Switch, withRouter, Link } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
-import FirstComponent from './components/FirstComponent';
-import SecondComponent from './components/SecondComponent';
+import WholeCountry from './components/WholeCountry';
+import ProvinceOverview from './components/ProvinceOverview';
 import ThirdComponent from './components/ThirdComponent';
-import FourthComponent from './components/FourthComponent';
+import ProvinceDetail from './components/ProvinceDetail';
 import FifthComponent from './components/FifthComponent';
 
 const { SubMenu } = Menu;
@@ -27,10 +27,8 @@ class Frame extends React.Component {
               style={{ height: '100%', borderRight: 0 }}
             >
               <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
-                <Menu.Item key="1"><Link to="/first">全国分布</Link></Menu.Item>
-                <Menu.Item key="2"><Link to="/second">省份分布</Link></Menu.Item>
-                <Menu.Item key="3"><Link to="/third">重点城市</Link></Menu.Item>
-                <Menu.Item key="5"><Link to="/fourth">省份分布</Link></Menu.Item>
+                <Menu.Item key="1"><Link to="/country">全国分布</Link></Menu.Item>
+                <Menu.Item key="2"><Link to="/province">省份分布</Link></Menu.Item>
               </SubMenu>
               <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
                 <Menu.Item key="6">城市排名</Menu.Item>
@@ -42,12 +40,10 @@ class Frame extends React.Component {
             <Content style={{ background: '#fff', padding: 24, margin: 0 }}>
               
               <Switch>
-                <Route path="/" exact component={FirstComponent} />
-                <Route path="/first" component={FirstComponent} />
-                <Route path="/second" component={SecondComponent} />
-                <Route path="/third" component={ThirdComponent} />
-                <Route path="/fourth" component={FourthComponent} />
-                <Route path="/fifth" component={FifthComponent} />
+                <Route path="/" exact component={WholeCountry} />
+                <Route path="/country" component={WholeCountry} />
+                <Route path="/province" component={ProvinceOverview} />
+                <Route path="/province_detail/:name" component={ProvinceDetail} />
               </Switch>
               
             </Content>

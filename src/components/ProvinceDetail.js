@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+
 
 import 'echarts/map/js/province/heilongjiang.js';
+import 'echarts/map/js/province/jilin.js';
 
-export default class FirstComponent extends React.Component {
+@withRouter
+export default class ProvinceDetail extends React.Component {
 
   getOption = () => {
     const option = {
@@ -46,7 +51,7 @@ export default class FirstComponent extends React.Component {
         {
           name: 'pm2.5',
           type: 'map',
-          mapType: '黑龙江', 
+          mapType: this.props.match.params.name, 
           itemStyle: {
             normal: { label: { show: true } },
             emphasis: { label: { show: true } },
@@ -62,11 +67,14 @@ export default class FirstComponent extends React.Component {
       ],
     };
     return option;
-  }
+  };
+
   onClick = (params) => {
     console.log(params);
+    this.props.history.push('/province');
   }
   render() {
+    console.log(this.props);
     const onEvents = {
       click: this.onClick,
     };
