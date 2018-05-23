@@ -44,6 +44,7 @@ class Frame extends React.Component {
                 <Route path="/country" component={WholeCountry} />
                 <Route path="/province" component={ProvinceOverview} />
                 <Route path="/province_detail/:name" component={ProvinceDetail} />
+                <Route path="/fifth" component={FifthComponent} />
               </Switch>
               
             </Content>

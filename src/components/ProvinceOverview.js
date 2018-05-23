@@ -3,6 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import { withRouter } from 'react-router-dom';
 
 import 'echarts/map/js/china.js';
+import PieChart from './PieChart';
 
 @withRouter
 export default class ProvinceOverview extends React.Component {
@@ -23,23 +24,10 @@ export default class ProvinceOverview extends React.Component {
         trigger: 'item',
         formatter: '{b}<br/>{c} (p / km2)',
       },
-      toolbox: {
-        show: true,
-        orient: 'vertical',
-        left: 'right',
-        top: 'center',
-        feature: {
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {},
-        },
-      },
       visualMap: {
-        min: 800,
+        min: 100,
         max: 50000,
         text: ['High', 'Low'],
-        realtime: false,
-        calculable: true,
         inRange: {
           color: ['lightskyblue', 'yellow', 'orangered'],
         },
@@ -80,6 +68,7 @@ export default class ProvinceOverview extends React.Component {
             className="react_for_echarts"
             onEvents={onEvents}
           />
+          <PieChart />
         </div>
       </div>
     );

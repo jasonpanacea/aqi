@@ -1,8 +1,19 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
+import { observer } from 'mobx-react';
 import 'echarts/extension/bmap/bmap';
+import { Spin } from 'antd';
 
+
+import BaseStore from '../stores/BaseStore';
+
+@observer
 export default class WholeCountry extends React.Component {
+
+  constructor(props) {
+    super(props);
+    BaseStore.fetchList();
+  }
 
   getOption = () => {
     const data = [
@@ -393,13 +404,10 @@ export default class WholeCountry extends React.Component {
     const convertData = function (data) {
       const res = [];
       for (let i = 0; i < data.length; i++) {
-        const geoCoord = geoCoordMap[data[i].name];
-        if (geoCoord) {
-          res.push({
-            name: data[i].name,
-            value: geoCoord.concat(data[i].value),
-          });
-        }
+        res.push({
+          name: data[i].city,
+          value: [data[i].longitude, data[i].latitude, data[i].pm25, data[i].quality],
+        });
       }
       return res;
     };
@@ -459,63 +467,63 @@ export default class WholeCountry extends React.Component {
             featureType: 'arterial',
             elementType: 'geometry.fill',
             stylers: {
-           color: '#fefefe',
-         },
+              color: '#fefefe',
+            },
           }, {
-         featureType: 'poi',
-         elementType: 'all',
-         stylers: {
-             visibility: 'off',
-           },
-       }, {
-           featureType: 'green',
-           elementType: 'all',
-           stylers: {
-               visibility: 'off',
-             },
-         }, {
-             featureType: 'subway',
-             elementType: 'all',
-             stylers: {
-                 visibility: 'off',
-               },
-           }, {
-               featureType: 'manmade',
-               elementType: 'all',
-               stylers: {
-                 color: '#d1d1d1',
-               },
-             }, {
-               featureType: 'local',
-               elementType: 'all',
-               stylers: {
-                 color: '#d1d1d1',
-               },
-             }, {
-               featureType: 'arterial',
-               elementType: 'labels',
-               stylers: {
-                 visibility: 'off',
-               },
-             }, {
-               featureType: 'boundary',
-               elementType: 'all',
-               stylers: {
-                 color: '#fefefe',
-               },
-             }, {
-               featureType: 'building',
-               elementType: 'all',
-               stylers: {
-                 color: '#d1d1d1',
-               },
-             }, {
-               featureType: 'label',
-               elementType: 'labels.text.fill',
-               stylers: {
-                 color: '#999999',
-               },
-             }],
+            featureType: 'poi',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off',
+            },
+          }, {
+            featureType: 'green',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off',
+            },
+          }, {
+            featureType: 'subway',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off',
+            },
+          }, {
+            featureType: 'manmade',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1',
+            },
+          }, {
+            featureType: 'local',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1',
+            },
+          }, {
+            featureType: 'arterial',
+            elementType: 'labels',
+            stylers: {
+              visibility: 'off',
+            },
+          }, {
+            featureType: 'boundary',
+            elementType: 'all',
+            stylers: {
+              color: '#fefefe',
+            },
+          }, {
+            featureType: 'building',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1',
+            },
+          }, {
+            featureType: 'label',
+            elementType: 'labels.text.fill',
+            stylers: {
+              color: '#999999',
+            },
+          }],
         },
       },
       series: [
@@ -523,10 +531,7 @@ export default class WholeCountry extends React.Component {
           name: 'pm2.5',
           type: 'scatter',
           coordinateSystem: 'bmap',
-          data: convertData(data),
-          symbolSize(val) {
-            return val[2] / 10;
-          },
+          data: convertData(BaseStore.detail.rows),
           label: {
             normal: {
               formatter: '{b}',
@@ -539,40 +544,23 @@ export default class WholeCountry extends React.Component {
           },
           itemStyle: {
             normal: {
-              color: 'purple',
+              color(val) {
+                if (val.data.value[3] === '优良') {
+                  return '#32f43e';
+                } else if (val.data.value[3] === '良') {
+                  return '#e4f33e';
+                } else if (val.data.value[3] === '轻度污染') {
+                  return '#e4993c';
+                } else if (val.data.value[3] === '中度污染') {
+                  return '#f60003';
+                } else if (val.data.value[3] === '重度污染') {
+                  return '#9f034c';
+                } else if (val.data.value[3] === '严重污染') {
+                  return '#800025';
+                }
+              },
             },
           },
-        },
-        {
-          name: 'Top 5',
-          type: 'effectScatter',
-          coordinateSystem: 'bmap',
-          data: convertData(data.sort((a, b) => {
-            return b.value - a.value;
-          }).slice(0, 6)),
-          symbolSize(val) {
-            return val[2] / 10;
-          },
-          showEffectOn: 'render',
-          rippleEffect: {
-            brushType: 'stroke',
-          },
-          hoverAnimation: true,
-          label: {
-            normal: {
-              formatter: '{b}',
-              position: 'right',
-              show: true,
-            },
-          },
-          itemStyle: {
-            normal: {
-              color: 'purple',
-              shadowBlur: 10,
-              shadowColor: '#333',
-            },
-          },
-          zlevel: 1,
         },
       ],
     };
@@ -580,6 +568,14 @@ export default class WholeCountry extends React.Component {
   };
     
   render() {
+    console.log(BaseStore);
+    if (!BaseStore.ready) {
+      return (
+        <div>
+          <Spin size="large" />
+        </div>
+      );
+    }
     return (
       <div className="examples">
         <div className="parent">
