@@ -212,7 +212,7 @@ export default class WholeCountry extends React.Component {
           <ReactEcharts
             ref={(e) => { this.echarts_react = e; }}  
             option={this.getOption()}
-            style={{ height: '600px', width: '100%' }}
+            style={{ height: '650px', width: '100%' }}
             className="react_for_echarts"
             onEvents={onEvents}
           />
