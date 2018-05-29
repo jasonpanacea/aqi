@@ -8,7 +8,19 @@ import TimeGrid from './components/TimeGrid';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
+@withRouter
 class Frame extends React.Component {
+  state = {
+    selectedKeys: ['1'],
+  }
+  componentWillReceiveProps = (nextProps) => {
+    console.log(nextProps.location.pathname);
+    if (nextProps.location.pathname === '/country' || nextProps.location.pathname === '/') {
+      this.setState({ selectedKeys: ['1'] });
+    } else if (nextProps.location.pathname.startsWith('/province')) {
+      this.setState({ selectedKeys: ['2'] });
+    }
+  }
   render() {
     return (
       <Layout style={{ height: '100%' }}>
@@ -23,6 +35,7 @@ class Frame extends React.Component {
               defaultSelectedKeys={['1']}
               defaultOpenKeys={['sub1']}
               style={{ height: '100%', borderRight: 0 }}
+              selectedKeys={this.state.selectedKeys}
             >
               <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
                 <Menu.Item key="1"><Link to="/country">全国分布</Link></Menu.Item>

@@ -36,7 +36,8 @@ export default class ProvinceOverview extends React.Component {
         {
           name: 'pm2.5',
           type: 'map',
-          mapType: 'china', 
+          mapType: 'china',
+          roam: true, 
           itemStyle: {
             normal: { label: { show: true } },
             emphasis: { label: { show: true } },
@@ -45,6 +46,7 @@ export default class ProvinceOverview extends React.Component {
             { name: '黑龙江', value: 20057.34 },
             { name: '吉林', value: 15477.48 },
             { name: '辽宁', value: 31686.1 },
+            { name: '内蒙古', value: 31686.1 },
           ],
         },
       ],
