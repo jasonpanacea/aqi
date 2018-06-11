@@ -1,7 +1,27 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
+import { Row, Col, Tabs } from 'antd';
 
-export default class FifthComponent extends React.Component {
+const TabPane = Tabs.TabPane;
+
+export default class CityCompare extends React.Component {
+
+  callback = (key) => {
+    console.log(key);
+  }
+
+  renderContent = () => {
+    return (
+      <Row>
+        <Col span={24}>
+          <ReactEcharts
+            ref={(e) => { this.echarts_react = e; }}  
+            option={this.getLineOption()}
+          />
+        </Col>
+      </Row>
+    );
+  }
 
   getLineOption = () => {
     const option = {
@@ -115,28 +135,57 @@ export default class FifthComponent extends React.Component {
     };
     return option;
   }
+  
 
   render() {
     return (
-      <div className="examples">
-        <div className="parent">
-          <ReactEcharts
-            option={this.getLineOption()}
-            style={{ height: '500px', width: '100%' }}
-            className="react_for_echarts"
-          />
-          <ReactEcharts
-            option={this.getBarOption()}
-            style={{ height: '500px', width: '100%' }}
-            className="react_for_echarts"
-          />
-          <ReactEcharts
-            option={this.getPieOption()}
-            style={{ height: '500px', width: '100%' }}
-            className="react_for_echarts"
-          />
-        </div>
-      </div>
+      <Tabs defaultActiveKey="AQI" onChange={this.callback} type="card">
+        <TabPane tab="AQI" key="AQI">
+          <Row>
+            <Col span={18}>
+              <ReactEcharts
+                option={this.getLineOption()}
+              />
+            </Col>
+            <Col span={6}>
+              <ReactEcharts
+                option={this.getPieOption()}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={18}>
+              <ReactEcharts
+                option={this.getBarOption()}
+              />
+            </Col>
+            <Col span={6}>
+              <ReactEcharts
+                option={this.getPieOption()}
+              />
+            </Col>
+          </Row>
+        </TabPane>
+        <TabPane tab="PM2.5" key="PM2.5">
+          {this.renderContent()}
+        </TabPane>
+        <TabPane tab="PM10" key="PM10">                
+          {this.renderContent()}
+        </TabPane>
+        <TabPane tab="SO2" key="SO2">
+          {this.renderContent()}
+        </TabPane>
+        <TabPane tab="NO2" key="NO2">
+          {this.renderContent()}
+        </TabPane>
+        <TabPane tab="O3" key="O3">
+          {this.renderContent()}
+        </TabPane>
+        <TabPane tab="CO" key="CO">
+          {this.renderContent()}
+        </TabPane>
+      </Tabs>
+      
     );
   }
 }

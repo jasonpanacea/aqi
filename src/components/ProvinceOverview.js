@@ -3,7 +3,6 @@ import ReactEcharts from 'echarts-for-react';
 import { withRouter } from 'react-router-dom';
 
 import 'echarts/map/js/china.js';
-import PieChart from './PieChart';
 
 @withRouter
 export default class ProvinceOverview extends React.Component {
@@ -62,17 +61,12 @@ export default class ProvinceOverview extends React.Component {
       click: this.onClick,
     };
     return (
-      <div className="examples">
-        <div className="parent">
-          <ReactEcharts
-            option={this.getOption()}
-            style={{ height: '500px', width: '100%' }}
-            className="react_for_echarts"
-            onEvents={onEvents}
-          />
-          <PieChart />
-        </div>
-      </div>
+      <ReactEcharts
+        option={this.getOption()}
+        style={{ height: '600px', width: '100%' }}
+        className="react_for_echarts"
+        onEvents={onEvents}
+      />
     );
   }
 }

@@ -6,6 +6,7 @@ import { Spin } from 'antd';
 
 import BaseStore from '../stores/BaseStore';
 
+
 @observer
 export default class WholeCountry extends React.Component {
 
@@ -14,18 +15,14 @@ export default class WholeCountry extends React.Component {
     BaseStore.fetchList();
   }
 
-  getOption = (center = [104.114129, 37.550339], zoomLevel = 5) => {
-    const convertData = function (data) {
-      const res = [];
-      for (let i = 0; i < data.length; i++) {
-        res.push({
-          name: data[i].city,
-          value: [data[i].longitude, data[i].latitude, data[i].pm25, data[i].quality],
-        });
-      }
-      return res;
-    };
+  componentWillReceiveProps() {
+
+  }
  
+  getOption = (center = [], zoomLevel = 5) => {
+    if (center.length === 0) {
+      center = [104.114129, 37.550339];
+    }
     const option = {
       title: {
         text: '全国主要城市空气质量 - 百度地图',
@@ -145,7 +142,7 @@ export default class WholeCountry extends React.Component {
           name: 'pm2.5',
           type: 'scatter',
           coordinateSystem: 'bmap',
-          data: convertData(BaseStore.detail.rows),
+          data: BaseStore.data,
           label: {
             normal: {
               formatter: 
@@ -187,7 +184,10 @@ export default class WholeCountry extends React.Component {
     return option;
   };
     
-  bmapRoam = (params) => {
+  bmapRoam = () => {
+    if (this === null || this.echarts_react === null) {
+      return;
+    }
     const echarts_instance = this.echarts_react.getEchartsInstance();
     const bmap = echarts_instance.getModel().getComponent('bmap').getBMap();
     const center = bmap.getCenter();
@@ -211,7 +211,7 @@ export default class WholeCountry extends React.Component {
         <div className="parent">
           <ReactEcharts
             ref={(e) => { this.echarts_react = e; }}  
-            option={this.getOption()}
+            option={this.getOption(this.props.center, this.props.zoomLevel)}
             style={{ height: '650px', width: '100%' }}
             className="react_for_echarts"
             onEvents={onEvents}

@@ -1,16 +1,20 @@
 import React from 'react';
-import { Row, Col, Radio, DatePicker, Table } from 'antd';
+import { Row, Col, Radio, DatePicker, Table, Cascader } from 'antd';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
-
+import { observer } from 'mobx-react';
 import WholeCountry from './WholeCountry';
 import ProvinceOverview from './ProvinceOverview';
+import CityCompare from './CityCompare';
+
+import RegionStore from '../stores/RegionStore';
 
 const RadioGroup = Radio.Group;
 const { RangePicker } = DatePicker;
 const { Column } = Table;
 
 @withRouter
+@observer
 export default class TimeGrid extends React.Component {
   state = {
     date_unit: '小时',
@@ -20,7 +24,15 @@ export default class TimeGrid extends React.Component {
     date_array: [],
     default_range: [moment().subtract(1, 'd'), moment()],
     date_range: [moment().subtract(1, 'd'), moment()],
+    center: [],
+    zoomLevel: 5,
   }
+
+  constructor(props) {
+    super(props);
+    RegionStore.fetchList();
+  }
+
   componentDidMount() {
     let cur = moment().subtract(1, 'd');
     const end = moment();
@@ -33,6 +45,20 @@ export default class TimeGrid extends React.Component {
     }
     this.setState({
       date_array,
+    });
+  }
+
+  onCityChange = (value, selectedOptions) => {
+    if (selectedOptions.length === 0) {
+      this.setState({
+        center: [],
+        zoomLevel: 5,
+      });
+      return;
+    }
+    this.setState({
+      center: selectedOptions[selectedOptions.length - 1].center,
+      zoomLevel: 12,
     });
   }
   onDateUnitChange = (e) => {
@@ -116,16 +142,53 @@ export default class TimeGrid extends React.Component {
 
   renderContent = () => {
     if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
-      return <WholeCountry />;
+      return <WholeCountry center={this.state.center} zoomLevel={this.state.zoomLevel} />;
     } else if (this.props.location.pathname === '/province') {
       return <ProvinceOverview />;
+    } else if (this.props.location.pathname === '/citycompare') {
+      return <CityCompare />;
     }
   }
   render() {
+    const renderSelectCity = () => {
+      if (this.props.location.pathname === '/country') {
+        return (
+          <Col span={3}>
+            <Cascader
+              options={RegionStore.regions}
+              expandTrigger="hover"
+              placeholder="选择城市"
+              onChange={this.onCityChange} 
+            />
+          </Col>
+        );
+      }
+
+      if (this.props.location.pathname === '/citycompare') {
+        return (
+          <Col span={8}>
+            <Cascader
+              options={RegionStore.regions}
+              expandTrigger="hover"
+              placeholder="选择城市"
+              onChange={this.onCityChange} 
+            />
+            <Cascader
+              options={RegionStore.regions}
+              expandTrigger="hover"
+              placeholder="选择城市"
+              onChange={this.onCityChange} 
+            />
+          </Col>
+        );
+      }
+    };
+
     return (
       <div>
         <Row>
-          <Col span={12}>
+          {renderSelectCity()}
+          <Col span={11}>
             <RadioGroup onChange={this.onDateUnitChange} value={this.state.date_unit} size="small">
               <Radio value={'小时'}>小时</Radio>
               <Radio value={'日'}>日</Radio>
@@ -133,7 +196,7 @@ export default class TimeGrid extends React.Component {
             </RadioGroup>
             <RangePicker onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
           </Col>
-          <Col span={12}>
+          {this.props.location.pathname !== '/citycompare' && <Col span={10}>
             <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
               <Radio value={'AQI'}>AQI</Radio>
               <Radio value={'PM2.5'}>PM2.5</Radio>
@@ -143,9 +206,10 @@ export default class TimeGrid extends React.Component {
               <Radio value={'O3'}>O3</Radio>
               <Radio value={'CO'}>CO</Radio>
             </RadioGroup>
-          </Col>
+          </Col>}
         </Row>
         <Row>
+          {this.props.location.pathname !== '/citycompare' && 
           <Col span={4}>
             <Table 
               dataSource={this.state.date_array} 
@@ -172,8 +236,10 @@ export default class TimeGrid extends React.Component {
                 width={60}
               />
             </Table>
+          
           </Col>
-          <Col span={20}>{this.renderContent()}</Col>
+        }
+          <Col span={this.props.location.pathname === '/citycompare' ? 24 : 20}>{this.renderContent()}</Col>
         </Row>
       </div>        
         
