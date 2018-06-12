@@ -16,20 +16,22 @@ const { Column } = Table;
 @withRouter
 @observer
 export default class TimeGrid extends React.Component {
-  state = {
-    date_unit: '小时',
-    quality_unit: 'AQI',
-    date_range_format: 'YYYY-MM-DD HH',
-    date_range_show_time: { format: 'HH' },
-    date_array: [],
-    default_range: [moment().subtract(1, 'd'), moment()],
-    date_range: [moment().subtract(1, 'd'), moment()],
-    center: [],
-    zoomLevel: 5,
-  }
 
   constructor(props) {
     super(props);
+    this.state = {
+      date_unit: '小时',
+      quality_unit: 'AQI',
+      date_range_format: 'YYYY-MM-DD HH',
+      date_range_show_time: { format: 'HH' },
+      date_array: [],
+      default_range: [moment().subtract(1, 'd'), moment()],
+      date_range: [moment().subtract(1, 'd'), moment()],
+      center: [],
+      zoomLevel: 5,
+      city1: '北京市',
+      city2: '上海市',
+    };
     RegionStore.fetchList();
   }
 
@@ -61,6 +63,15 @@ export default class TimeGrid extends React.Component {
       zoomLevel: 12,
     });
   }
+
+  onCity1Change = (value, selectedOptions) => {
+    this.setState({ city1: selectedOptions[selectedOptions.length - 1].label });
+  }
+
+  onCity2Change = (value, selectedOptions) => {
+    this.setState({ city2: selectedOptions[selectedOptions.length - 1].label });
+  }
+
   onDateUnitChange = (e) => {
     this.setState({
       date_unit: e.target.value,
@@ -146,12 +157,12 @@ export default class TimeGrid extends React.Component {
     } else if (this.props.location.pathname === '/province') {
       return <ProvinceOverview />;
     } else if (this.props.location.pathname === '/citycompare') {
-      return <CityCompare />;
+      return <CityCompare date_array={this.state.date_array.map(x => x.date_str)} city1={this.state.city1} city2={this.state.city2} date_unit={this.state.date_unit} />;
     }
   }
   render() {
     const renderSelectCity = () => {
-      if (this.props.location.pathname === '/country') {
+      if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
         return (
           <Col span={3}>
             <Cascader
@@ -171,13 +182,17 @@ export default class TimeGrid extends React.Component {
               options={RegionStore.regions}
               expandTrigger="hover"
               placeholder="选择城市"
-              onChange={this.onCityChange} 
+              allowClear={false}
+              defaultValue={[this.state.city1]}
+              onChange={this.onCity1Change} 
             />
             <Cascader
               options={RegionStore.regions}
               expandTrigger="hover"
               placeholder="选择城市"
-              onChange={this.onCityChange} 
+              allowClear={false}
+              defaultValue={[this.state.city2]}
+              onChange={this.onCity2Change} 
             />
           </Col>
         );
@@ -208,7 +223,7 @@ export default class TimeGrid extends React.Component {
             </RadioGroup>
           </Col>}
         </Row>
-        <Row>
+        <Row style={{ marginTop: '20px' }}>
           {this.props.location.pathname !== '/citycompare' && 
           <Col span={4}>
             <Table 

@@ -14,8 +14,19 @@ class Frame extends React.Component {
     selectedKeys: ['1'],
   }
 
+  componentDidMount = () => {
+    if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
+      this.setState({ selectedKeys: ['1'] });
+    } else if (this.props.location.pathname.startsWith('/province')) {
+      this.setState({ selectedKeys: ['2'] });
+    } else if (this.props.location.pathname === '/cityrank') {
+      this.setState({ selectedKeys: ['3'] });
+    } else if (this.props.location.pathname === '/citycompare') {
+      this.setState({ selectedKeys: ['4'] });
+    } 
+  }
+
   componentWillReceiveProps = (nextProps) => {
-    console.log(nextProps.location.pathname);
     if (nextProps.location.pathname === '/country' || nextProps.location.pathname === '/') {
       this.setState({ selectedKeys: ['1'] });
     } else if (nextProps.location.pathname.startsWith('/province')) {
