@@ -40,9 +40,8 @@ class Frame extends React.Component {
   render() {
     return (
       <Layout style={{ height: '100%' }}>
-        <Header className="header">
-          <span>AQI预警平台</span>
-          <span>用户名</span>
+        <Header className="header" style={{ background: '#5e327d' }}>
+          <span style={{ fontSize: '16px', color: 'white' }}>AQHI预警平台</span>
         </Header>
         <Layout>
           <Sider width={180} style={{ background: '#fff' }}>

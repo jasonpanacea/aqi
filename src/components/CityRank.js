@@ -47,7 +47,7 @@ export default class CityRank extends React.Component {
           <Tabs defaultActiveKey="city" onChange={this.tabChange} type="card">
             <TabPane tab="城市排名" key="city">
               <Row>
-                <Col span={8}>
+                <Col span={10}>
                   <Table 
                     dataSource={dataSource} 
                     size="small" 
@@ -74,7 +74,7 @@ export default class CityRank extends React.Component {
                       width={50}
                     />
                     <Column
-                      title="AQI"
+                      title="AQHI"
                       dataIndex="AQI"
                       key="AQI"
                       width={40}
@@ -108,12 +108,12 @@ export default class CityRank extends React.Component {
                     />
                   </Table>
                 </Col>
-                <Col span={16}><WholeCountry /></Col>
+                <Col span={14}><WholeCountry /></Col>
               </Row>
             </TabPane>
             <TabPane tab="省份排名" key="province">
               <Row>
-                <Col span={8}>
+                <Col span={10}>
                   <Table 
                     dataSource={dataSource} 
                     size="small" 
@@ -141,7 +141,7 @@ export default class CityRank extends React.Component {
                       sorter={(a, b) => a.city_count - b.city_count}
                     />
                     <Column
-                      title="AQI"
+                      title="AQHI"
                       dataIndex="AQI"
                       key="AQI"
                       width={40}
@@ -175,7 +175,7 @@ export default class CityRank extends React.Component {
                     />
                   </Table>
                 </Col>
-                <Col span={16}><ProvinceOverview /></Col>
+                <Col span={14}><ProvinceOverview /></Col>
               </Row>
             </TabPane>
           </Tabs>

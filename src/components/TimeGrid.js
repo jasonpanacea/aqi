@@ -7,6 +7,8 @@ import WholeCountry from './WholeCountry';
 import ProvinceOverview from './ProvinceOverview';
 import CityCompare from './CityCompare';
 
+import '../styles/grid.less';
+
 import RegionStore from '../stores/RegionStore';
 
 const RadioGroup = Radio.Group;
@@ -169,6 +171,7 @@ export default class TimeGrid extends React.Component {
               options={RegionStore.regions}
               expandTrigger="hover"
               placeholder="选择城市"
+              popupClassName="popup"
               onChange={this.onCityChange} 
             />
           </Col>
@@ -183,6 +186,7 @@ export default class TimeGrid extends React.Component {
               expandTrigger="hover"
               placeholder="选择城市"
               allowClear={false}
+              popupClassName="popup"
               defaultValue={[this.state.city1]}
               onChange={this.onCity1Change} 
             />
@@ -191,6 +195,7 @@ export default class TimeGrid extends React.Component {
               expandTrigger="hover"
               placeholder="选择城市"
               allowClear={false}
+              popupClassName="popup"
               defaultValue={[this.state.city2]}
               onChange={this.onCity2Change} 
             />
@@ -213,7 +218,7 @@ export default class TimeGrid extends React.Component {
           </Col>
           {this.props.location.pathname !== '/citycompare' && <Col span={10}>
             <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
-              <Radio value={'AQI'}>AQI</Radio>
+              <Radio value={'AQI'}>AQHI</Radio>
               <Radio value={'PM2.5'}>PM2.5</Radio>
               <Radio value={'PM10'}>PM10</Radio>
               <Radio value={'SO2'}>SO2</Radio>

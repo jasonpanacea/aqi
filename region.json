@@ -15,6 +15,22 @@
       "level": "province"
     },
     {
+      "name": "上海市",
+      "center": {
+        "longitude": 121.473662,
+        "latitude": 31.230372
+      },
+      "level": "province"
+    },
+    {
+      "name": "天津市",
+      "center": {
+        "longitude": 117.200983,
+        "latitude": 39.084158
+      },
+      "level": "province"
+    },
+    {
       "name": "重庆市",
       "center": {
         "longitude": 106.551643,
@@ -8927,14 +8943,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "上海市",
-      "center": {
-        "longitude": 121.473662,
-        "latitude": 31.230372
-      },
-      "level": "province"
     },
     {
       "name": "安徽省",
@@ -25662,14 +25670,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "天津市",
-      "center": {
-        "longitude": 117.200983,
-        "latitude": 39.084158
-      },
-      "level": "province"
     },
     {
       "name": "四川省",
