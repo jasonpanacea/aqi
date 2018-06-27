@@ -25,16 +25,24 @@ export default class CityRank extends React.Component {
     const dataSource = [{
       key: 1,
       number: 1,
-      city: '胡彦斌',
+      city: '三亚',
+      province: '海南',
+      city_count: 10,
       AQI: 32,
-      quality: '西湖区湖底',
+      pm25: 10,
+      pm10: 16,
+      quality: '优',
       rank: 1,
     }, {
       key: 2,
       number: 2,
-      city: '胡彦祖',
-      AQI: 42,
-      quality: '西湖区湖底',
+      city: '海口',
+      province: '海南',
+      city_count: 20,
+      AQI: 32,
+      pm25: 10,
+      pm10: 16,
+      quality: '优',
       rank: 2,
     }];
       
@@ -77,33 +85,34 @@ export default class CityRank extends React.Component {
                       title="AQHI"
                       dataIndex="AQI"
                       key="AQI"
-                      width={40}
+                      width={60}
                       sorter={(a, b) => a.AQI - b.AQI}
                     />
                     <Column
                       title="质量等级"
                       dataIndex="quality"
                       key="quality"
+                      width={60}
                     />
                     <Column
                       title="pm25"
                       dataIndex="pm25"
                       key="pm25"
-                      width={50}
+                      width={60}
                       sorter={(a, b) => a.pm25 - b.pm25}
                     />
                     <Column
                       title="pm10"
                       dataIndex="pm10"
                       key="pm10"
-                      width={50}
+                      width={70}
                       sorter={(a, b) => a.pm10 - b.pm10}
                     />
                     <Column
                       title="排名"
                       dataIndex="rank"
                       key="rank"
-                      width={40}
+                      width={50}
                       sorter={(a, b) => a.rank - b.rank}
                     />
                   </Table>
@@ -144,13 +153,14 @@ export default class CityRank extends React.Component {
                       title="AQHI"
                       dataIndex="AQI"
                       key="AQI"
-                      width={40}
+                      width={50}
                       sorter={(a, b) => a.AQI - b.AQI}
                     />
                     <Column
                       title="质量等级"
                       dataIndex="quality"
                       key="quality"
+                      width={60}
                     />
                     <Column
                       title="pm25"

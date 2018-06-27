@@ -22,7 +22,7 @@ class BaseStore {
         const item = this.list[i];
         res.push({
           name: item.city,
-          value: [item.longitude, item.latitude, item.pm25, item.quality],
+          value: [item.longitude, item.latitude, item.aqi, item.quality, item.city, item.position_name],
         });
       }
       return res;

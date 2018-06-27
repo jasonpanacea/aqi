@@ -214,7 +214,7 @@ export default class TimeGrid extends React.Component {
               <Radio value={'日'}>日</Radio>
               <Radio value={'月'}>月</Radio>
             </RadioGroup>
-            <RangePicker onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
+            <RangePicker style={{ maxWidth: '300px' }} onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
           </Col>
           {this.props.location.pathname !== '/citycompare' && <Col span={10}>
             <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">

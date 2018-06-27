@@ -30,6 +30,13 @@ export default class WholeCountry extends React.Component {
       },
       tooltip: {
         trigger: 'item',
+        formatter: 
+          function format(val) {
+            if (zoomLevel <= 6) {
+              return `${val.value[4]} ${val.value[2]}`;
+            }
+            return `${val.value[5]} ${val.value[2]}`;
+          }, 
       },
       bmap: {
         center,
@@ -83,7 +90,7 @@ export default class WholeCountry extends React.Component {
       },
       series: [
         {
-          name: 'pm2.5',
+          name: 'AQI',
           type: 'scatter',
           coordinateSystem: 'bmap',
           data: BaseStore.data,
@@ -91,10 +98,7 @@ export default class WholeCountry extends React.Component {
             normal: {
               formatter: 
                 function format(val) {
-                  if (zoomLevel <= 6) {
-                    return '';
-                  }
-                  return val.value; 
+                  return '';
                 }, 
               position: 'right',
               show: true,
@@ -106,6 +110,7 @@ export default class WholeCountry extends React.Component {
           itemStyle: {
             normal: {
               color(val) {
+                // return '#e4f33e';
                 if (val.data.value[3] === '优良') {
                   return '#32f43e';
                 } else if (val.data.value[3] === '良') {
