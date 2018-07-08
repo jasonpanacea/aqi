@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Radio, DatePicker, Table, Cascader } from 'antd';
+import { Row, Col, Radio, DatePicker, Table, Cascader, Button } from 'antd';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
@@ -33,6 +33,8 @@ export default class TimeGrid extends React.Component {
       zoomLevel: 5,
       city1: '北京市',
       city2: '上海市',
+      playing: false,
+      selectedDateIndex: 0,
     };
     RegionStore.fetchList();
   }
@@ -162,52 +164,81 @@ export default class TimeGrid extends React.Component {
       return <CityCompare date_array={this.state.date_array.map(x => x.date_str)} city1={this.state.city1} city2={this.state.city2} date_unit={this.state.date_unit} />;
     }
   }
+
+  renderSelectCity = () => {
+    if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
+      return (
+        <Col span={3}>
+          <Cascader
+            options={RegionStore.regions}
+            expandTrigger="hover"
+            placeholder="选择城市"
+            popupClassName="popup"
+            onChange={this.onCityChange} 
+          />
+        </Col>
+      );
+    }
+
+    if (this.props.location.pathname === '/citycompare') {
+      return (
+        <Col span={8}>
+          <Cascader
+            options={RegionStore.regions}
+            expandTrigger="hover"
+            placeholder="选择城市"
+            allowClear={false}
+            popupClassName="popup"
+            defaultValue={[this.state.city1]}
+            onChange={this.onCity1Change} 
+          />
+          <Cascader
+            options={RegionStore.regions}
+            expandTrigger="hover"
+            placeholder="选择城市"
+            allowClear={false}
+            popupClassName="popup"
+            defaultValue={[this.state.city2]}
+            onChange={this.onCity2Change} 
+          />
+        </Col>
+      );
+    }
+  };
+
+  setClassName = (record, index) => {
+    return (index === this.state.selectedDateIndex ? 'selected-date-index' : '');
+  }
+
+  changePlayStatus = () => {
+    if (this.state.playing) {
+      this.setState({ playing: false });
+      clearInterval(this.timer);
+    } else {
+      this.setState({ playing: true });
+      this.timer = setInterval(
+        () => this.play(),
+        1000
+      );
+    }
+  }
+
+  play = () => {
+    if (this.state.selectedDateIndex === RegionStore.list.length) {
+      clearInterval(this.timer);
+      return;
+    }
+    RegionStore.fetchList();
+    this.setState((prevState) => {
+      return { selectedDateIndex: prevState.selectedDateIndex + 1 };
+    });
+  }
+
   render() {
-    const renderSelectCity = () => {
-      if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
-        return (
-          <Col span={3}>
-            <Cascader
-              options={RegionStore.regions}
-              expandTrigger="hover"
-              placeholder="选择城市"
-              popupClassName="popup"
-              onChange={this.onCityChange} 
-            />
-          </Col>
-        );
-      }
-
-      if (this.props.location.pathname === '/citycompare') {
-        return (
-          <Col span={8}>
-            <Cascader
-              options={RegionStore.regions}
-              expandTrigger="hover"
-              placeholder="选择城市"
-              allowClear={false}
-              popupClassName="popup"
-              defaultValue={[this.state.city1]}
-              onChange={this.onCity1Change} 
-            />
-            <Cascader
-              options={RegionStore.regions}
-              expandTrigger="hover"
-              placeholder="选择城市"
-              allowClear={false}
-              popupClassName="popup"
-              defaultValue={[this.state.city2]}
-              onChange={this.onCity2Change} 
-            />
-          </Col>
-        );
-      }
-    };
-
     return (
       <div>
         <Row>
-          {renderSelectCity()}
+          {this.renderSelectCity()}
           <Col span={11}>
             <RadioGroup onChange={this.onDateUnitChange} value={this.state.date_unit} size="small">
               <Radio value={'小时'}>小时</Radio>
@@ -215,18 +246,22 @@ export default class TimeGrid extends React.Component {
               <Radio value={'月'}>月</Radio>
             </RadioGroup>
             <RangePicker style={{ maxWidth: '300px' }} onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
+            
           </Col>
-          {this.props.location.pathname !== '/citycompare' && <Col span={10}>
-            <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
-              <Radio value={'AQI'}>AQHI</Radio>
-              <Radio value={'PM2.5'}>PM2.5</Radio>
-              <Radio value={'PM10'}>PM10</Radio>
-              <Radio value={'SO2'}>SO2</Radio>
-              <Radio value={'NO2'}>NO2</Radio>
-              <Radio value={'O3'}>O3</Radio>
-              <Radio value={'CO'}>CO</Radio>
-            </RadioGroup>
-          </Col>}
+          {
+            this.props.location.pathname !== '/citycompare' && 
+            <Col span={10}>
+              <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
+                <Radio value={'AQI'}>AQHI</Radio>
+                <Radio value={'PM2.5'}>PM2.5</Radio>
+                <Radio value={'PM10'}>PM10</Radio>
+                <Radio value={'SO2'}>SO2</Radio>
+                <Radio value={'NO2'}>NO2</Radio>
+                <Radio value={'O3'}>O3</Radio>
+                <Radio value={'CO'}>CO</Radio>
+              </RadioGroup>
+            </Col>
+          }
         </Row>
         <Row style={{ marginTop: '20px' }}>
           {this.props.location.pathname !== '/citycompare' && 
@@ -237,23 +272,28 @@ export default class TimeGrid extends React.Component {
               bordered
               pagination={false}
               scroll={{ y: 600 }}
-              onRow={(record) => {
+              rowClassName={this.setClassName}
+              onRow={(record, index) => {
                 return {
-                  onClick: () => { console.log(record); },
+                  onClick: () => { 
+                    RegionStore.fetchList();
+                    this.setState({ selectedDateIndex: index });
+                  },
                 };
               }}
             >
               <Column
-                title=""
+                title={<Button type="primary" onClick={this.changePlayStatus} icon={this.state.playing ? 'pause-circle-o' : 'play-circle-o'} size="small" >{this.state.playing ? '暂停' : '播放'}</Button>}
                 dataIndex="number"
                 key="number"
-                width={30}
+                width={40}
+                className="index-column"
               />
               <Column
                 title="监测时间点"
                 dataIndex="date_str"
                 key="date_str"
-                width={60}
+                width={50}
               />
             </Table>
           

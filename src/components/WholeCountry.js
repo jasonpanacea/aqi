@@ -2,7 +2,7 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { observer } from 'mobx-react';
 import 'echarts/extension/bmap/bmap';
-import { Spin } from 'antd';
+import { Spin, Card } from 'antd';
 
 import BaseStore from '../stores/BaseStore';
 
@@ -13,6 +13,9 @@ export default class WholeCountry extends React.Component {
   constructor(props) {
     super(props);
     BaseStore.fetchList();
+    this.state = {
+      cardVisible: false,
+    };
   }
 
   componentWillReceiveProps() {
@@ -143,9 +146,15 @@ export default class WholeCountry extends React.Component {
     echarts_instance.setOption(this.getOption([center.lng, center.lat], bmap.getZoom()));
   }
 
+  click = (params) => {
+    console.log(params);
+    this.setState({ cardVisible: true });
+  }
+
   render() {
     const onEvents = {
       bmapRoam: this.bmapRoam,
+      click: this.click,
     };
 
     if (!BaseStore.ready) {
@@ -156,16 +165,21 @@ export default class WholeCountry extends React.Component {
       );
     }
     return (
-      <div className="examples">
-        <div className="parent">
-          <ReactEcharts
-            ref={(e) => { this.echarts_react = e; }}  
-            option={this.getOption(this.props.center, this.props.zoomLevel)}
-            style={{ height: '650px', width: '100%' }}
-            className="react_for_echarts"
-            onEvents={onEvents}
-          />
-        </div>
+      <div className="map">
+        <ReactEcharts
+          ref={(e) => { this.echarts_react = e; }}  
+          option={this.getOption(this.props.center, this.props.zoomLevel)}
+          style={{ height: '650px', width: '100%' }}
+          className="react_for_echarts"
+          onEvents={onEvents}
+        />
+        { this.state.cardVisible &&
+        <Card title="Card title" style={{ width: 300, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity:0.5 }}>
+          <p>Card content</p>
+          <p>Card content</p>
+          <p>Card content</p>
+        </Card>
+      }
       </div>
     );
   }

@@ -108,13 +108,6 @@ export default class CityRank extends React.Component {
                       width={70}
                       sorter={(a, b) => a.pm10 - b.pm10}
                     />
-                    <Column
-                      title="排名"
-                      dataIndex="rank"
-                      key="rank"
-                      width={50}
-                      sorter={(a, b) => a.rank - b.rank}
-                    />
                   </Table>
                 </Col>
                 <Col span={14}><WholeCountry /></Col>
@@ -175,13 +168,6 @@ export default class CityRank extends React.Component {
                       key="pm10"
                       width={50}
                       sorter={(a, b) => a.pm10 - b.pm10}
-                    />
-                    <Column
-                      title="排名"
-                      dataIndex="rank"
-                      key="rank"
-                      width={40}
-                      sorter={(a, b) => a.rank - b.rank}
                     />
                   </Table>
                 </Col>
