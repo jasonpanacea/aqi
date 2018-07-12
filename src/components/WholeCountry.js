@@ -2,7 +2,7 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { observer } from 'mobx-react';
 import 'echarts/extension/bmap/bmap';
-import { Spin, Card, Modal } from 'antd';
+import { Spin, Card, Icon } from 'antd';
 
 import BaseStore from '../stores/BaseStore';
 
@@ -18,11 +18,18 @@ export default class WholeCountry extends React.Component {
     this.state = {
       cardVisible: false,
     };
+    this.changeCenter = true;
   }
 
   componentWillUpdate(nextProps, nextState) {
     console.log(nextProps);
     console.log(nextState);
+    if (this.changeCenter) {
+      this.center = nextProps.center;
+      this.zoomLevel = nextProps.zoomLevel;
+    } else {
+      this.changeCenter = true;
+    }
   }
 
 
@@ -151,7 +158,15 @@ export default class WholeCountry extends React.Component {
 
   click = (params) => {
     console.log(params);
+    this.changeCenter = false;
+    this.cityname = params.name;
+    this.cityValue = params.value;
     this.setState({ cardVisible: true });
+  }
+
+  closeCard = () => {
+    this.setState({ cardVisible: false });
+    this.changeCenter = false;
   }
 
   render() {
@@ -177,8 +192,8 @@ export default class WholeCountry extends React.Component {
           onEvents={onEvents}
         />
         { this.state.cardVisible &&
-        <Card title="Card title" style={{ width: 300, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity: 0.5 }}>
-          <p>Card content</p>
+        <Card title={this.cityname} extra={<Icon type="close-circle" onClick={this.closeCard} />} style={{ width: 400, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity: 0.8 }}>
+          <p>{this.cityValue[3]}</p>
           <p>Card content</p>
           <p>Card content</p>
         </Card>

@@ -10,6 +10,7 @@ import CityCompare from './CityCompare';
 import '../styles/grid.less';
 
 import RegionStore from '../stores/RegionStore';
+import BaseStore from '../stores/BaseStore';
 
 const RadioGroup = Radio.Group;
 const { RangePicker } = DatePicker;
@@ -29,7 +30,7 @@ export default class TimeGrid extends React.Component {
       date_array: [],
       default_range: [moment().subtract(1, 'd'), moment()],
       date_range: [moment().subtract(1, 'd'), moment()],
-      center: [],
+      center: [104.114129, 37.550339],
       zoomLevel: 5,
       city1: '北京市',
       city2: '上海市',
@@ -224,11 +225,11 @@ export default class TimeGrid extends React.Component {
   }
 
   play = () => {
-    if (this.state.selectedDateIndex === RegionStore.list.length) {
+    if (this.state.selectedDateIndex === this.state.date_array.length) {
       clearInterval(this.timer);
       return;
     }
-    RegionStore.fetchList();
+    BaseStore.fetchList();
     this.setState((prevState) => {
       return { selectedDateIndex: prevState.selectedDateIndex + 1 };
     });
@@ -276,7 +277,8 @@ export default class TimeGrid extends React.Component {
               onRow={(record, index) => {
                 return {
                   onClick: () => { 
-                    RegionStore.fetchList();
+                    console.log(record);
+                    BaseStore.fetchList();
                     this.setState({ selectedDateIndex: index });
                   },
                 };
