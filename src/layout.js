@@ -4,6 +4,7 @@ import { Layout, Menu, Icon } from 'antd';
 import ProvinceDetail from './components/ProvinceDetail';
 import TimeGrid from './components/TimeGrid';
 import CityRank from './components/CityRank';
+import City from './components/City';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -11,30 +12,26 @@ const { Header, Content, Sider } = Layout;
 @withRouter
 class Frame extends React.Component {
   state = {
-    selectedKeys: ['1'],
+    selectedKeys: ['country'],
   }
 
   componentDidMount = () => {
     if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
-      this.setState({ selectedKeys: ['1'] });
+      this.setState({ selectedKeys: ['country'] });
     } else if (this.props.location.pathname.startsWith('/province')) {
-      this.setState({ selectedKeys: ['2'] });
-    } else if (this.props.location.pathname === '/cityrank') {
-      this.setState({ selectedKeys: ['3'] });
-    } else if (this.props.location.pathname === '/citycompare') {
-      this.setState({ selectedKeys: ['4'] });
-    } 
+      this.setState({ selectedKeys: ['province'] });
+    } else {
+      this.setState({ selectedKeys: [this.props.location.pathname.substring(1)] });
+    }
   }
 
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.location.pathname === '/country' || nextProps.location.pathname === '/') {
-      this.setState({ selectedKeys: ['1'] });
+      this.setState({ selectedKeys: ['country'] });
     } else if (nextProps.location.pathname.startsWith('/province')) {
-      this.setState({ selectedKeys: ['2'] });
-    } else if (nextProps.location.pathname === '/cityrank') {
-      this.setState({ selectedKeys: ['3'] });
-    } else if (nextProps.location.pathname === '/citycompare') {
-      this.setState({ selectedKeys: ['4'] });
+      this.setState({ selectedKeys: ['province'] });
+    } else {
+      this.setState({ selectedKeys: [nextProps.location.pathname.substring(1)] });
     }
   }
   render() {
@@ -53,12 +50,13 @@ class Frame extends React.Component {
               selectedKeys={this.state.selectedKeys}
             >
               <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
-                <Menu.Item key="1"><Link to="/country">全国分布</Link></Menu.Item>
-                <Menu.Item key="2"><Link to="/province">省份分布</Link></Menu.Item>
+                <Menu.Item key="country"><Link to="/country">全国分布</Link></Menu.Item>
+                <Menu.Item key="province"><Link to="/province">省份分布</Link></Menu.Item>
+                <Menu.Item key="city"><Link to="/city">重点城市</Link></Menu.Item>
               </SubMenu>
               <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
-                <Menu.Item key="3"><Link to="/cityrank">城市排名</Link></Menu.Item>
-                <Menu.Item key="4"><Link to="/citycompare">城市对比</Link></Menu.Item>
+                <Menu.Item key="cityrank"><Link to="/cityrank">城市排名</Link></Menu.Item>
+                <Menu.Item key="citycompare"><Link to="/citycompare">城市对比</Link></Menu.Item>
               </SubMenu>
             </Menu>
           </Sider>
@@ -70,8 +68,9 @@ class Frame extends React.Component {
                 <Route path="/country" component={TimeGrid} />
                 <Route path="/province" component={TimeGrid} />
                 <Route path="/province_detail/:name" component={ProvinceDetail} />
-                <Route path="/citycompare" component={TimeGrid} />
-                <Route path="/cityrank" component={CityRank} />
+                <Route path="/citycompare" exact component={TimeGrid} />
+                <Route path="/cityrank" exact component={CityRank} />
+                <Route path="/city" exact component={City} />
               </Switch>
               
             </Content>
