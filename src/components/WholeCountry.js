@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import 'echarts/extension/bmap/bmap';
-import { Spin, Card, Icon } from 'antd';
+import { Spin, Card, Icon, Button } from 'antd';
 
 import BaseStore from '../stores/BaseStore';
 
 import '../styles/WholeCountry.less';
 
 
+@withRouter
 @observer
 export default class WholeCountry extends React.Component {
 
@@ -19,11 +21,10 @@ export default class WholeCountry extends React.Component {
       cardVisible: false,
     };
     this.changeCenter = true;
+    this.locateCenter = [104.114129, 37.550339];
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log(nextProps);
-    console.log(nextState);
     if (this.changeCenter) {
       this.center = nextProps.center;
       this.zoomLevel = nextProps.zoomLevel;
@@ -159,6 +160,7 @@ export default class WholeCountry extends React.Component {
   click = (params) => {
     console.log(params);
     this.changeCenter = false;
+    this.locateCenter = [params.value[0], params.value[1]];
     this.cityname = params.name;
     this.cityValue = params.value;
     this.setState({ cardVisible: true });
@@ -167,6 +169,12 @@ export default class WholeCountry extends React.Component {
   closeCard = () => {
     this.setState({ cardVisible: false });
     this.changeCenter = false;
+  }
+
+  locate = () => {
+    console.log(this.locateCenter);
+    const echarts_instance = this.echarts_react.getEchartsInstance();
+    echarts_instance.setOption(this.getOption(this.locateCenter, 12));
   }
 
   render() {
@@ -192,7 +200,12 @@ export default class WholeCountry extends React.Component {
           onEvents={onEvents}
         />
         { this.state.cardVisible &&
-        <Card title={this.cityname} extra={<Icon type="close-circle" onClick={this.closeCard} />} style={{ width: 400, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity: 0.8 }}>
+        <Card 
+          title={this.cityname} 
+          extra={<Icon type="close-circle" onClick={this.closeCard} />} 
+          style={{ width: 400, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity: 0.9 }}
+          actions={[<Button icon="environment" onClick={this.locate}>地图定位</Button>, <Button icon="select" onClick={() => { this.props.history.push(`/city/${this.cityname}`); }}>查看详情</Button>]}
+        >
           <p>{this.cityValue[3]}</p>
           <p>Card content</p>
           <p>Card content</p>

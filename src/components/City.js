@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, Radio, DatePicker, Tabs, Cascader, Button } from 'antd';
 import moment from 'moment';
 
@@ -11,6 +12,7 @@ const TabPane = Tabs.TabPane;
 const RadioGroup = Radio.Group;
 const { RangePicker } = DatePicker;
 
+@withRouter
 @observer
 export default class City extends React.Component {
 
@@ -25,7 +27,7 @@ export default class City extends React.Component {
       date_array: [],
       default_range: [moment().subtract(1, 'd'), moment()],
       date_range: [moment().subtract(1, 'd'), moment()],
-      city: '北京市',
+      city: this.props.match.params.name,
     };
     RegionStore.fetchList();
   }

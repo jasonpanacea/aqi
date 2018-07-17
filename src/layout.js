@@ -20,6 +20,8 @@ class Frame extends React.Component {
       this.setState({ selectedKeys: ['country'] });
     } else if (this.props.location.pathname.startsWith('/province')) {
       this.setState({ selectedKeys: ['province'] });
+    } else if (this.props.location.pathname.startsWith('/city/')) {
+      this.setState({ selectedKeys: ['city'] });
     } else {
       this.setState({ selectedKeys: [this.props.location.pathname.substring(1)] });
     }
@@ -30,6 +32,8 @@ class Frame extends React.Component {
       this.setState({ selectedKeys: ['country'] });
     } else if (nextProps.location.pathname.startsWith('/province')) {
       this.setState({ selectedKeys: ['province'] });
+    } else if (nextProps.location.pathname.startsWith('/city/')) {
+      this.setState({ selectedKeys: ['city'] });
     } else {
       this.setState({ selectedKeys: [nextProps.location.pathname.substring(1)] });
     }
@@ -52,7 +56,7 @@ class Frame extends React.Component {
               <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
                 <Menu.Item key="country"><Link to="/country">全国分布</Link></Menu.Item>
                 <Menu.Item key="province"><Link to="/province">省份分布</Link></Menu.Item>
-                <Menu.Item key="city"><Link to="/city">重点城市</Link></Menu.Item>
+                <Menu.Item key="city"><Link to="/city/北京市">重点城市</Link></Menu.Item>
               </SubMenu>
               <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
                 <Menu.Item key="cityrank"><Link to="/cityrank">城市排名</Link></Menu.Item>
@@ -70,7 +74,7 @@ class Frame extends React.Component {
                 <Route path="/province_detail/:name" component={ProvinceDetail} />
                 <Route path="/citycompare" exact component={TimeGrid} />
                 <Route path="/cityrank" exact component={CityRank} />
-                <Route path="/city" exact component={City} />
+                <Route path="/city/:name" exact component={City} />
               </Switch>
               
             </Content>
