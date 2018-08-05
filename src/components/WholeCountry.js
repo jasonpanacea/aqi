@@ -183,13 +183,13 @@ export default class WholeCountry extends React.Component {
       click: this.click,
     };
 
-    if (!BaseStore.ready) {
-      return (
-        <div>
-          <Spin size="large" />
-        </div>
-      );
-    }
+    // if (!BaseStore.ready) {
+    //   return (
+    //     <div>
+    //       <Spin size="large" />
+    //     </div>
+    //   );
+    // }
     return (
       <div className="map">
         <ReactEcharts

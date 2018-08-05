@@ -18,7 +18,7 @@ class BaseStore {
 
     @computed get data() {
       const res = [];
-      for (let i = 0; i < this.list.length; i++) {
+      for (let i = 0; i < this.list.length; i += 1) {
         const item = this.list[i];
         res.push({
           name: item.city,

@@ -58,7 +58,7 @@ export default class TimeGrid extends React.Component {
   onCityChange = (value, selectedOptions) => {
     if (selectedOptions.length === 0) {
       this.setState({
-        center: [],
+        center: [104.114129, 37.550339],
         zoomLevel: 5,
       });
       return;
