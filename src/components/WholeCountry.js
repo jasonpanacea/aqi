@@ -16,12 +16,15 @@ export default class WholeCountry extends React.Component {
 
   constructor(props) {
     super(props);
-    BaseStore.fetchList();
     this.state = {
       cardVisible: false,
     };
     this.changeCenter = true;
     this.locateCenter = [104.114129, 37.550339];
+  }
+
+  componentWillReceiveProps(nextProps) {
+    BaseStore.fetchList(nextProps.date_unit, nextProps.date_str, nextProps.quality_unit);
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -105,7 +108,7 @@ export default class WholeCountry extends React.Component {
           name: 'AQI',
           type: 'scatter',
           coordinateSystem: 'bmap',
-          data: BaseStore.data,
+          data: BaseStore.list,
           label: {
             normal: {
               formatter: 
@@ -172,7 +175,6 @@ export default class WholeCountry extends React.Component {
   }
 
   locate = () => {
-    console.log(this.locateCenter);
     const echarts_instance = this.echarts_react.getEchartsInstance();
     echarts_instance.setOption(this.getOption(this.locateCenter, 12));
   }

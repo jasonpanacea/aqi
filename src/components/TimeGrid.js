@@ -24,7 +24,7 @@ export default class TimeGrid extends React.Component {
     super(props);
     this.state = {
       date_unit: '小时',
-      quality_unit: 'AQI',
+      quality_unit: 'aqi',
       date_range_format: 'YYYY-MM-DD HH',
       date_range_show_time: { format: 'HH' },
       date_array: [],
@@ -40,7 +40,7 @@ export default class TimeGrid extends React.Component {
     RegionStore.fetchList();
   }
 
-  componentDidMount() {
+  componentWillMount() {
     let cur = moment().subtract(1, 'd');
     const end = moment();
     let count = 1;
@@ -123,6 +123,7 @@ export default class TimeGrid extends React.Component {
     }
     this.setState({
       date_array,
+      selectedDateIndex: 0,
     });
   }
   onQualityUnitChange = (e) => {
@@ -154,11 +155,12 @@ export default class TimeGrid extends React.Component {
     this.setState({
       date_array,
     });
+    BaseStore.fetchList(this.state.date_unit, date_array[0].date_str, this.state.quality_unit);
   }
 
   renderContent = () => {
     if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
-      return <WholeCountry center={this.state.center} zoomLevel={this.state.zoomLevel} />;
+      return <WholeCountry center={this.state.center} zoomLevel={this.state.zoomLevel} date_str={this.state.date_array[this.state.selectedDateIndex].date_str} date_unit={this.state.date_unit} quality_unit={this.state.quality_unit} />;
     } else if (this.props.location.pathname === '/province') {
       return <ProvinceOverview />;
     } else if (this.props.location.pathname === '/citycompare') {
@@ -225,11 +227,11 @@ export default class TimeGrid extends React.Component {
   }
 
   play = () => {
-    if (this.state.selectedDateIndex === this.state.date_array.length) {
+    if (this.state.selectedDateIndex === this.state.date_array.length - 1) {
       clearInterval(this.timer);
+      this.setState({ playing: false });
       return;
     }
-    BaseStore.fetchList();
     this.setState((prevState) => {
       return { selectedDateIndex: prevState.selectedDateIndex + 1 };
     });
@@ -253,9 +255,9 @@ export default class TimeGrid extends React.Component {
             this.props.location.pathname !== '/citycompare' && 
             <Col span={10}>
               <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
-                <Radio value={'AQI'}>AQHI</Radio>
-                <Radio value={'PM2.5'}>PM2.5</Radio>
-                <Radio value={'PM10'}>PM10</Radio>
+                <Radio value={'aqi'}>AQHI</Radio>
+                <Radio value={'pm25'}>PM2.5</Radio>
+                <Radio value={'pm10'}>PM10</Radio>
                 <Radio value={'SO2'}>SO2</Radio>
                 <Radio value={'NO2'}>NO2</Radio>
                 <Radio value={'O3'}>O3</Radio>
@@ -277,8 +279,7 @@ export default class TimeGrid extends React.Component {
               onRow={(record, index) => {
                 return {
                   onClick: () => { 
-                    console.log(record);
-                    BaseStore.fetchList();
+                    BaseStore.fetchList(this.state.date_unit, record.date_str, this.state.quality_unit);
                     this.setState({ selectedDateIndex: index });
                   },
                 };
