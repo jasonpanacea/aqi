@@ -24,7 +24,7 @@ export default class WholeCountry extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    BaseStore.fetchList(nextProps.date_unit, nextProps.date_str, nextProps.quality_unit);
+    BaseStore.fetchWholeCountry(nextProps.date_unit, nextProps.date_str, nextProps.quality_unit);
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -108,7 +108,7 @@ export default class WholeCountry extends React.Component {
           name: 'AQI',
           type: 'scatter',
           coordinateSystem: 'bmap',
-          data: BaseStore.list,
+          data: BaseStore.wholeCountryList,
           label: {
             normal: {
               formatter: 
@@ -185,13 +185,6 @@ export default class WholeCountry extends React.Component {
       click: this.click,
     };
 
-    // if (!BaseStore.ready) {
-    //   return (
-    //     <div>
-    //       <Spin size="large" />
-    //     </div>
-    //   );
-    // }
     return (
       <div className="map">
         <ReactEcharts

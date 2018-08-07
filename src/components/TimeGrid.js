@@ -162,7 +162,7 @@ export default class TimeGrid extends React.Component {
     if (this.props.location.pathname === '/country' || this.props.location.pathname === '/') {
       return <WholeCountry center={this.state.center} zoomLevel={this.state.zoomLevel} date_str={this.state.date_array[this.state.selectedDateIndex].date_str} date_unit={this.state.date_unit} quality_unit={this.state.quality_unit} />;
     } else if (this.props.location.pathname === '/province') {
-      return <ProvinceOverview />;
+      return <ProvinceOverview date_str={this.state.date_array[this.state.selectedDateIndex].date_str} date_unit={this.state.date_unit} quality_unit={this.state.quality_unit} />;
     } else if (this.props.location.pathname === '/citycompare') {
       return <CityCompare date_array={this.state.date_array.map(x => x.date_str)} city1={this.state.city1} city2={this.state.city2} date_unit={this.state.date_unit} />;
     }
@@ -278,8 +278,7 @@ export default class TimeGrid extends React.Component {
               rowClassName={this.setClassName}
               onRow={(record, index) => {
                 return {
-                  onClick: () => { 
-                    BaseStore.fetchList(this.state.date_unit, record.date_str, this.state.quality_unit);
+                  onClick: () => {
                     this.setState({ selectedDateIndex: index });
                   },
                 };

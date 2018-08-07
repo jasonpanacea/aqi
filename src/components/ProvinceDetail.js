@@ -7,6 +7,7 @@ import 'echarts/map/js/province/heilongjiang.js';
 import 'echarts/map/js/province/jilin.js';
 import 'echarts/map/js/province/liaoning.js';
 import 'echarts/map/js/province/anhui.js';
+import 'echarts/map/js/province/beijing.js';
 import 'echarts/map/js/province/chongqing.js';
 import 'echarts/map/js/province/fujian.js';
 
