@@ -48,7 +48,7 @@ export default class ProvinceOverview extends React.Component {
             normal: { label: { show: true } },
             emphasis: { label: { show: true } },
           },
-          data: this.data,
+          data: BaseStore.provinceList.slice(),
         },
       ],
     };
@@ -61,15 +61,9 @@ export default class ProvinceOverview extends React.Component {
     const onEvents = {
       click: this.onClick,
     };
-    if (BaseStore.provinceList.length) {
-      this.data = BaseStore.provinceList.filter(x => ({ name: x.name, value: x.value }));
-    } else {
-      this.data = [];
-    }
-    const option = this.getOption();
     return (
       <ReactEcharts
-        option={option}
+        option={this.getOption()}
         style={{ height: '600px', width: '100%' }}
         onEvents={onEvents}
       />

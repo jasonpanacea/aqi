@@ -108,7 +108,7 @@ export default class WholeCountry extends React.Component {
           name: 'AQI',
           type: 'scatter',
           coordinateSystem: 'bmap',
-          data: BaseStore.wholeCountryList,
+          data: BaseStore.wholeCountryList.slice(),
           label: {
             normal: {
               formatter: 
