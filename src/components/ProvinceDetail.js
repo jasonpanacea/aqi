@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { observer } from 'mobx-react';
 
 import 'echarts/map/js/province/heilongjiang.js';
 import 'echarts/map/js/province/jilin.js';
@@ -39,16 +39,17 @@ import 'echarts/map/js/province/xizang.js';
 import 'echarts/map/js/province/yunnan.js';
 import 'echarts/map/js/province/zhejiang.js';
 
+import BaseStore from '../stores/BaseStore';
+
 @withRouter
+@observer
 export default class ProvinceDetail extends React.Component {
 
   getOption = () => {
     const option = {
       backgroundColor: '#264a69',
       title: {
-        text: '全国主要城市空气质量',
-        subtext: 'data from PM25.in',
-        sublink: 'http://www.pm25.in',
+        text: `${this.props.match.params.name}空气质量`,
         x: 'center',
         textStyle: {
           color: '#fff',
@@ -56,22 +57,11 @@ export default class ProvinceDetail extends React.Component {
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{b}<br/>{c} (p / km2)',
-      },
-      toolbox: {
-        show: true,
-        orient: 'vertical',
-        left: 'right',
-        top: 'center',
-        feature: {
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {},
-        },
+        formatter: `{b}<br/>${this.props.match.params.quality_unit}: {c}`,
       },
       visualMap: {
-        min: 800,
-        max: 50000,
+        min: 0,
+        max: 500,
         text: ['High', 'Low'],
         realtime: false,
         calculable: true,
@@ -84,17 +74,12 @@ export default class ProvinceDetail extends React.Component {
           name: 'pm2.5',
           type: 'map',
           mapType: this.props.match.params.name, 
+          roam: true, 
           itemStyle: {
             normal: { label: { show: true } },
             emphasis: { label: { show: true } },
           },
-          data: [
-            { name: '牡丹江市', value: 20057.34 },
-            { name: '哈尔滨市', value: 15477.48 },
-            { name: '齐齐哈尔市', value: 31686.1 },
-            { name: '佳木斯市', value: 6992.6 },
-            { name: '大庆市', value: 44045.49 },
-          ],
+          data: BaseStore.provinceDetail.slice(),
         },
       ],
     };
@@ -102,11 +87,9 @@ export default class ProvinceDetail extends React.Component {
   };
 
   onClick = (params) => {
-    console.log(params);
     this.props.history.push('/province');
   }
   render() {
-    console.log(this.props);
     const onEvents = {
       click: this.onClick,
     };

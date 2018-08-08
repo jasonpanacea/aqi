@@ -13,6 +13,7 @@ class BaseStore {
 
     @observable wholeCountryList = [];
     @observable provinceList = [];
+    @observable provinceDetail = [];
   
     @computed get ready() {
       return !this.initial && !this.loading;
@@ -20,6 +21,9 @@ class BaseStore {
 
   get url() {
     return 'http://127.0.0.1:8080/api/v1/datapoints/query';
+  }
+  get zxs() {
+    return ['北京', '上海', '重庆', '天津'];
   }
 
   buildQueryParams(date_unit, date_str) {
@@ -112,6 +116,53 @@ class BaseStore {
     return query;
   }
 
+  buildProvinceDetailQuery(date_unit, date_str, name, provinceName) {
+    const params = this.buildQueryParams(date_unit, date_str);
+    let group_tag = 'city';
+    let province = provinceName;
+    if (this.zxs.indexOf(provinceName) >= 0) {
+      province += '市';
+      group_tag = 'district';
+    } else {
+      province += '省';
+    }
+    const query = {
+      metrics: [
+        {
+          tags: {
+            province: [
+              province,
+            ],
+          },
+          name,
+          group_by: [
+            {
+              name: 'tag',
+              tags: [
+                group_tag,
+              ],
+            },
+          ],
+          aggregators: [
+            {
+              name: 'avg',
+              sampling: {
+                value: '1',
+                unit: params[2],
+              },
+              align_start_time: true,
+            },
+          ],
+        },
+      ],
+      plugins: [],
+      cache_time: 0,
+      start_absolute: params[0],
+      end_absolute: params[1],
+    };
+    return query;
+  }
+
     @action fetchWholeCountry(date_unit, date_str, name = 'aqi') {
       this.loading = true;
       
@@ -162,6 +213,30 @@ class BaseStore {
           .catch((err) => {
             console.log(err);
           });
+    }
+
+    @action fetchProvinceDetail(date_unit, date_str, name, provinceName) {
+      const query = this.buildProvinceDetailQuery(date_unit, date_str, name, provinceName);
+      axios.post(this.url, query)
+      .then((response) => {
+        const list = response.data.queries[0].results;
+        const sample_size = response.data.queries[0].sample_size;
+        this.loading = false;
+        this.initial = false;
+        if (sample_size) {
+          this.provinceDetail = list.map(x => (
+            { 
+              name: this.zxs.indexOf(provinceName) < 0 ? x.tags.city[0] : x.tags.district[0],
+              value: Math.round(x.values[0][1]),
+            })
+          );
+        } else {
+          this.provinceDetail = [];
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     }
 }
 export { BaseStore };

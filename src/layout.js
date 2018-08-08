@@ -71,7 +71,7 @@ class Frame extends React.Component {
                 <Route path="/" exact component={TimeGrid} />
                 <Route path="/country" component={TimeGrid} />
                 <Route path="/province" component={TimeGrid} />
-                <Route path="/province_detail/:name" component={ProvinceDetail} />
+                <Route path="/province_detail/:name/:quality_unit" component={ProvinceDetail} />
                 <Route path="/citycompare" exact component={TimeGrid} />
                 <Route path="/cityrank" exact component={CityRank} />
                 <Route path="/city/:name" exact component={City} />

@@ -6,12 +6,13 @@ import { observer } from 'mobx-react';
 import 'echarts/map/js/china.js';
 
 import BaseStore from '../stores/BaseStore';
+import ProvinceDetail from './ProvinceDetail';
 
 
 @withRouter
 @observer
 export default class ProvinceOverview extends React.Component {
-
+  
   componentWillReceiveProps(nextProps) {
     BaseStore.fetchProvinceList(nextProps.date_unit, nextProps.date_str, nextProps.quality_unit);
   }
@@ -55,7 +56,10 @@ export default class ProvinceOverview extends React.Component {
     return option;
   }
   onClick = (params) => {
-    this.props.history.push(`/province_detail/${params.name}`);
+    if (params.name) { 
+      this.props.history.push(`/province_detail/${params.name}/${this.props.quality_unit}`);
+      BaseStore.fetchProvinceDetail(this.props.date_unit, this.props.date_str, this.props.quality_unit, params.name);
+    }
   }
   render() {
     const onEvents = {
