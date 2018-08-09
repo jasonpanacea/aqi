@@ -46,7 +46,7 @@ class DataLoader(object):
         
 
 def main():
-    dl = DataLoader('./load_test.csv', 'http://localhost:8080/api/v1/datapoints')
+    dl = DataLoader('./hlj.csv', 'http://localhost:8080/api/v1/datapoints')
     dl.post_data()
 
 if __name__ == '__main__':

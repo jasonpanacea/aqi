@@ -6,7 +6,7 @@ import { Row, Col, Radio, DatePicker, Tabs, Cascader, Button } from 'antd';
 import moment from 'moment';
 
 import RegionStore from '../stores/RegionStore';
-
+import BaseStore from '../stores/BaseStore';
 
 const TabPane = Tabs.TabPane;
 const RadioGroup = Radio.Group;
@@ -19,9 +19,9 @@ export default class City extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tab: 'AQI',
+      tab: 'aqi',
       date_unit: '小时',
-      quality_unit: 'AQI',
+      quality_unit: 'aqi',
       date_range_format: 'YYYY-MM-DD HH',
       date_range_show_time: { format: 'HH' },
       date_array: [],
@@ -31,7 +31,8 @@ export default class City extends React.Component {
     };
     RegionStore.fetchList();
   }
-  componentDidMount() {
+
+  componentWillMount() {
     let cur = moment().subtract(1, 'd');
     const end = moment();
     let count = 1;
@@ -52,7 +53,9 @@ export default class City extends React.Component {
   }
 
   onCityChange = (value, selectedOptions) => {
-    this.setState({ city: selectedOptions[selectedOptions.length - 1].label });
+    const city = selectedOptions[selectedOptions.length - 1].label;
+    this.setState({ city });
+    BaseStore.fetchCityDetail(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, this.state.tab, city);
   }
 
   onDateUnitChange = (e) => {
@@ -171,7 +174,7 @@ export default class City extends React.Component {
         {
           name: city,
           type: 'line',
-          data: [120, 132, 101, 134, 90, 230, 210],
+          data: BaseStore.cityDetail.slice(),
         },
       ],
     };
@@ -277,8 +280,8 @@ export default class City extends React.Component {
           
           </Col>
         </Row>
-        <Tabs defaultActiveKey="AQI" onChange={this.tabChange} type="card" style={{ marginTop: '20px' }}>
-          <TabPane tab="AQI" key="AQI">
+        <Tabs defaultActiveKey="aqi" onChange={this.tabChange} type="card" style={{ marginTop: '20px' }}>
+          <TabPane tab="AQI" key="aqi">
             <Row>
               <Col span={18}>
                 <ReactEcharts
@@ -299,10 +302,10 @@ export default class City extends React.Component {
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="PM2.5" key="PM2.5">
+          <TabPane tab="PM2.5" key="pm25">
             {this.renderContent(date_array, this.state.city, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="PM10" key="PM10">                
+          <TabPane tab="PM10" key="pm10">                
             {this.renderContent(date_array, this.state.city, this.state.date_unit)}
           </TabPane>
           <TabPane tab="SO2" key="SO2">

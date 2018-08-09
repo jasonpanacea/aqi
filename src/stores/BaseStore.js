@@ -14,6 +14,7 @@ class BaseStore {
     @observable wholeCountryList = [];
     @observable provinceList = [];
     @observable provinceDetail = [];
+    @observable cityDetail = [];
   
     @computed get ready() {
       return !this.initial && !this.loading;
@@ -41,6 +42,25 @@ class BaseStore {
       const mnt = moment(date_str, 'YYYY-MM');
       start = mnt.unix() * 1000;
       end = start + ((mnt.daysInMonth() - 1) * 24 * 60 * 60 + 23 * 60 * 60) * 1000;
+      unit = 'months';
+    }
+    return [start, end, unit];
+  }
+
+  buildQueryParamsForCity(date_unit, start_date, end_date) {
+    let start = 0;
+    let end = 0;
+    let unit = 'hours';
+    if (date_unit === '小时') {
+      start = moment(start_date, 'YYYY-MM-DD HH').unix() * 1000;
+      end = moment(end_date, 'YYYY-MM-DD HH').unix() * 1000;
+    } if (date_unit === '日') {
+      start = moment(start_date, 'YYYY-MM-DD').unix() * 1000;
+      end = moment(end_date, 'YYYY-MM-DD').unix() * 1000;
+      unit = 'days';
+    } else if (date_unit === '月') {
+      start = moment(start_date, 'YYYY-MM').unix() * 1000;
+      end = moment(end_date, 'YYYY-MM').unix() * 1000;
       unit = 'months';
     }
     return [start, end, unit];
@@ -232,6 +252,59 @@ class BaseStore {
           );
         } else {
           this.provinceDetail = [];
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+
+  buildCityDetailQuery(date_unit, start_date, end_date, name, cityName) {
+    const params = this.buildQueryParamsForCity(date_unit, start_date, end_date);
+    const city = cityName;
+    const query = {
+      metrics: [
+        {
+          tags: {
+            city: [
+              city,
+            ],
+          },
+          name,
+          aggregators: [
+            {
+              name: 'avg',
+              sampling: {
+                value: '1',
+                unit: params[2],
+              },
+              align_start_time: true,
+            },
+          ],
+        },
+      ],
+      plugins: [],
+      cache_time: 0,
+      start_absolute: params[0],
+      end_absolute: params[1],
+    };
+    return query;
+  }
+
+    @action fetchCityDetail(date_unit, start_date, end_date, name, cityName) {
+      const query = this.buildCityDetailQuery(date_unit, start_date, end_date, name, cityName);
+      let date_format = 'YYYY-MM-DD HH';
+      if (date_unit === '日') { date_format = 'YYYY-MM-DD'; } else if (date_unit === '月') { date_format = 'YYYY-MM'; }
+      axios.post(this.url, query)
+      .then((response) => {
+        const list = response.data.queries[0].results;
+        const sample_size = response.data.queries[0].sample_size;
+        this.loading = false;
+        this.initial = false;
+        if (sample_size) {
+          this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+        } else {
+          this.cityDetail = [];
         }
       })
       .catch((err) => {
