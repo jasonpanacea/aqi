@@ -18,43 +18,37 @@ export default class City extends React.Component {
 
   constructor(props) {
     super(props);
+    let cur = moment().subtract(1, 'd');
+    const end = moment();
+    let count = 1;
+    const date_array = [];
+    while (cur.isBefore(end) || cur.isSame(end)) {
+      date_array.push({ key: count, number: count, date_str: cur.format('YYYY-MM-DD HH') });
+      cur = cur.add(1, 'h');
+      count += 1;
+    }
     this.state = {
       tab: 'aqi',
       date_unit: '小时',
       quality_unit: 'aqi',
       date_range_format: 'YYYY-MM-DD HH',
       date_range_show_time: { format: 'HH' },
-      date_array: [],
+      date_array,
       default_range: [moment().subtract(1, 'd'), moment()],
       date_range: [moment().subtract(1, 'd'), moment()],
-      city: this.props.match.params.name,
     };
     RegionStore.fetchList();
+    BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
   }
-
-  componentWillMount() {
-    let cur = moment().subtract(1, 'd');
-    const end = moment();
-    let count = 1;
-    const date_array = [];
-    while (cur.isBefore(end) || cur.isSame(end)) {
-      date_array.push({ key: count, number: count, date_str: cur.format(this.state.date_range_format) });
-      cur = cur.add(1, 'h');
-      count += 1;
-    }
-    this.setState({
-      date_array,
-    });
-  }
-
 
   tabChange = (key) => {
     this.setState({ tab: key });
+    BaseStore.fetchCityDetail(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, key, BaseStore.detailCity);
   }
 
   onCityChange = (value, selectedOptions) => {
     const city = selectedOptions[selectedOptions.length - 1].label;
-    this.setState({ city });
+    BaseStore.detailCity = city;
     BaseStore.fetchCityDetail(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, this.state.tab, city);
   }
 
@@ -105,6 +99,7 @@ export default class City extends React.Component {
     this.setState({
       date_array,
     });
+    BaseStore.fetchCityDetail(e.target.value, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
   }
 
   onDateChange = (dates, dateStrings) => {
@@ -130,6 +125,7 @@ export default class City extends React.Component {
     this.setState({
       date_array,
     });
+    BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
   }
 
   renderContent = (date_array, city, date_unit) => {
@@ -266,7 +262,7 @@ export default class City extends React.Component {
               expandTrigger="hover"
               placeholder="选择城市"
               popupClassName="popup"
-              defaultValue={[this.state.city]}
+              defaultValue={BaseStore.detailProvince === '' ? [BaseStore.detailCity] : [BaseStore.detailProvince, BaseStore.detailCity]}
               onChange={this.onCityChange}
             />
           </Col>
@@ -285,40 +281,40 @@ export default class City extends React.Component {
             <Row>
               <Col span={18}>
                 <ReactEcharts
-                  option={this.getLineOption(date_array, this.state.city, this.state.date_unit)}
+                  option={this.getLineOption(date_array, BaseStore.detailCity, this.state.date_unit)}
                 />
               </Col>
               <Col span={6}>
                 <ReactEcharts
-                  option={this.getPieOption(this.state.city, this.state.date_unit)}
+                  option={this.getPieOption(BaseStore.detailCity, this.state.date_unit)}
                 />
               </Col>
             </Row>
             <Row style={{ marginTop: '20px' }}>
               <Col span={16}>
                 <ReactEcharts
-                  option={this.getBarOption(this.state.city, this.state.date_unit)}
+                  option={this.getBarOption(BaseStore.detailCity, this.state.date_unit)}
                 />
               </Col>
             </Row>
           </TabPane>
           <TabPane tab="PM2.5" key="pm25">
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="PM10" key="pm10">                
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="SO2" key="SO2">
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="NO2" key="NO2">
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="O3" key="O3">
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="CO" key="CO">
-            {this.renderContent(date_array, this.state.city, this.state.date_unit)}
+            {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
         </Tabs>
       </div>

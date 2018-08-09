@@ -15,10 +15,22 @@ class BaseStore {
     @observable provinceList = [];
     @observable provinceDetail = [];
     @observable cityDetail = [];
+
+    @observable detailCity = '北京市';
+
+    @observable detailProvince = '';
   
     @computed get ready() {
       return !this.initial && !this.loading;
     }
+
+  set detailCity(city) {
+    this.detailCity = city;
+  }
+
+  set detailProvince(province) {
+    this.detailProvince = province;
+  }
 
   get url() {
     return 'http://127.0.0.1:8080/api/v1/datapoints/query';
@@ -197,7 +209,7 @@ class BaseStore {
               this.wholeCountryList = list.map(x => (
                 { 
                   name: x.tags.city[0], 
-                  value: [x.tags.longtitude[0], x.tags.latitude[0], Math.round(x.values[0][1]), x.tags.quality[0], x.tags.city[0], x.tags.position_name[0]],
+                  value: [x.tags.longtitude[0], x.tags.latitude[0], Math.round(x.values[0][1]), x.tags.quality[0], x.tags.city[0], x.tags.position_name[0], x.tags.province[0]],
                 })
               );
             } else {

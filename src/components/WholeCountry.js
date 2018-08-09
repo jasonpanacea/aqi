@@ -165,6 +165,7 @@ export default class WholeCountry extends React.Component {
     this.changeCenter = false;
     this.locateCenter = [params.value[0], params.value[1]];
     this.cityname = params.name;
+    this.provinceName = params.value[6];
     this.cityValue = params.value;
     this.setState({ cardVisible: true });
   }
@@ -199,7 +200,19 @@ export default class WholeCountry extends React.Component {
           title={this.cityname} 
           extra={<Icon type="close-circle" onClick={this.closeCard} />} 
           style={{ width: 400, position: 'fixed', right: '20px', bottom: '10px', zIndex: 99999, opacity: 0.9 }}
-          actions={[<Button icon="environment" onClick={this.locate}>地图定位</Button>, <Button icon="select" onClick={() => { this.props.history.push(`/city/${this.cityname}`); }}>查看详情</Button>]}
+          actions={[<Button icon="environment" onClick={this.locate}>地图定位</Button>, 
+            <Button 
+              icon="select" 
+              onClick={
+                () => { 
+                  this.props.history.push('/city/'); 
+                  BaseStore.detailCity = this.cityname; 
+                  BaseStore.detailProvince = this.cityname === this.provinceName ? '' : this.provinceName; 
+                }}
+            >
+          查看详情
+          </Button>,
+          ]}
         >
           <p>{this.cityValue[3]}</p>
           <p>Card content</p>

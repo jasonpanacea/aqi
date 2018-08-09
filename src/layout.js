@@ -56,7 +56,7 @@ class Frame extends React.Component {
               <SubMenu key="sub1" title={<span><Icon type="user" />指数监测</span>}>
                 <Menu.Item key="country"><Link to="/country">全国分布</Link></Menu.Item>
                 <Menu.Item key="province"><Link to="/province">省份分布</Link></Menu.Item>
-                <Menu.Item key="city"><Link to="/city/北京市">重点城市</Link></Menu.Item>
+                <Menu.Item key="city"><Link to="/city">重点城市</Link></Menu.Item>
               </SubMenu>
               <SubMenu key="sub2" title={<span><Icon type="laptop" />趋势分析</span>}>
                 <Menu.Item key="cityrank"><Link to="/cityrank">城市排名</Link></Menu.Item>
@@ -74,7 +74,7 @@ class Frame extends React.Component {
                 <Route path="/province_detail/:name/:quality_unit" component={ProvinceDetail} />
                 <Route path="/citycompare" exact component={TimeGrid} />
                 <Route path="/cityrank" exact component={CityRank} />
-                <Route path="/city/:name" exact component={City} />
+                <Route path="/city" exact component={City} />
               </Switch>
               
             </Content>
