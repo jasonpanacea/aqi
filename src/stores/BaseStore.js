@@ -32,6 +32,26 @@ class BaseStore {
   set detailProvince(province) {
     this.detailProvince = province;
   }
+  @computed get cityQualityDetailForBar() {
+    const text = ['优', '良', '轻度污染', '中度污染', '重度污染', '严重污染'];
+    const res = [];
+    if (this.cityQualityDetail.length === 0) { return res; }
+
+    let sum = 0;
+    this.cityQualityDetail.slice().forEach((x) => { sum += x.value; });
+    if (sum === 0) { return res; }
+    text.forEach((x) => {
+      let v = 0;
+      this.cityQualityDetail.slice().forEach((y) => {
+        if (y.name === x) {
+          v = Math.round(y.value * 100 / sum);
+        }
+      });
+      res.push(v);
+    });
+    return res;
+  }
+
 
   get url() {
     return 'http://127.0.0.1:8080/api/v1/datapoints/query';
