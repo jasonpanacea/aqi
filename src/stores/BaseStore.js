@@ -15,6 +15,7 @@ class BaseStore {
     @observable provinceList = [];
     @observable provinceDetail = [];
     @observable cityDetail = [];
+    @observable cityQualityDetail = [];
 
     @observable detailCity = '北京市';
 
@@ -63,19 +64,23 @@ class BaseStore {
     let start = 0;
     let end = 0;
     let unit = 'hours';
+    let sampling = 1;
     if (date_unit === '小时') {
       start = moment(start_date, 'YYYY-MM-DD HH').unix() * 1000;
       end = moment(end_date, 'YYYY-MM-DD HH').unix() * 1000;
+      sampling = Math.round((end - start) / (3600 * 1000));
     } if (date_unit === '日') {
       start = moment(start_date, 'YYYY-MM-DD').unix() * 1000;
       end = moment(end_date, 'YYYY-MM-DD').unix() * 1000;
       unit = 'days';
+      sampling = Math.round((end - start) / (24 * 3600 * 1000)) + 1;
     } else if (date_unit === '月') {
       start = moment(start_date, 'YYYY-MM').unix() * 1000;
       end = moment(end_date, 'YYYY-MM').unix() * 1000;
+      sampling = Math.round((end - start) / (30 * 24 * 3600 * 1000)) + 1;
       unit = 'months';
     }
-    return [start, end, unit];
+    return [start, end, unit, sampling];
   }
 
   buildWholeCountryQuery(date_unit, date_str, name) {
@@ -317,6 +322,66 @@ class BaseStore {
           this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
         } else {
           this.cityDetail = [];
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+
+
+  buildCityQualityQuery(date_unit, start_date, end_date, cityName) {
+    const params = this.buildQueryParamsForCity(date_unit, start_date, end_date);
+    const city = cityName;
+    const query = {
+      metrics: [
+        {
+          tags: {
+            city: [
+              city,
+            ],
+          },
+          name: 'aqi',
+          group_by: [
+            {
+              name: 'tag',
+              tags: [
+                'quality',
+              ],
+            },
+          ],
+          aggregators: [
+            {
+              name: 'count',
+              sampling: {
+                value: params[3],
+                unit: params[2],
+              },
+              align_start_time: true,
+            },
+          ],
+        },
+      ],
+      plugins: [],
+      cache_time: 0,
+      start_absolute: params[0],
+      end_absolute: params[1],
+    };
+    return query;
+  }
+
+    @action fetchCityQuality(date_unit, start_date, end_date, cityName) {
+      const query = this.buildCityQualityQuery(date_unit, start_date, end_date, cityName);
+      axios.post(this.url, query)
+      .then((response) => {
+        const list = response.data.queries[0].results;
+        const sample_size = response.data.queries[0].sample_size;
+        this.loading = false;
+        this.initial = false;
+        if (sample_size) {
+          this.cityQualityDetail = list.map(x => ({ name: x.tags.quality[0], value: x.values[0][1] }));
+        } else {
+          this.cityQualityDetail = [];
         }
       })
       .catch((err) => {

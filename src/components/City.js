@@ -39,6 +39,7 @@ export default class City extends React.Component {
     };
     RegionStore.fetchList();
     BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
+    BaseStore.fetchCityQuality(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, BaseStore.detailCity);
   }
 
   tabChange = (key) => {
@@ -50,6 +51,7 @@ export default class City extends React.Component {
     const city = selectedOptions[selectedOptions.length - 1].label;
     BaseStore.detailCity = city;
     BaseStore.fetchCityDetail(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, this.state.tab, city);
+    BaseStore.fetchCityQuality(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, city);
   }
 
   onDateUnitChange = (e) => {
@@ -100,6 +102,7 @@ export default class City extends React.Component {
       date_array,
     });
     BaseStore.fetchCityDetail(e.target.value, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
+    BaseStore.fetchCityQuality(e.target.value, date_array[0].date_str, date_array[date_array.length - 1].date_str, BaseStore.detailCity);
   }
 
   onDateChange = (dates, dateStrings) => {
@@ -126,6 +129,7 @@ export default class City extends React.Component {
       date_array,
     });
     BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
+    BaseStore.fetchCityQuality(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, BaseStore.detailCity);
   }
 
   renderContent = (date_array, city, date_unit) => {
@@ -236,14 +240,7 @@ export default class City extends React.Component {
         {
           type: 'pie',
           radius: [0, '50%'],
-          data: [
-                    { value: 335, name: '优' },
-                    { value: 310, name: '良' },
-                    { value: 274, name: '轻度污染' },
-                    { value: 235, name: '中度污染' },
-                    { value: 400, name: '重度污染' },
-                    { value: 100, name: '严重污染' },
-          ],
+          data: BaseStore.cityQualityDetail.slice(),
         },
       ],
     };
