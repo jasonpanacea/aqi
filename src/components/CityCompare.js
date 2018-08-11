@@ -1,17 +1,29 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Row, Col, Tabs } from 'antd';
+import { observer } from 'mobx-react';
+
+import BaseStore from '../stores/BaseStore';
 
 const TabPane = Tabs.TabPane;
 
+@observer
 export default class CityCompare extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { tab: 'AQI' };
+    this.state = { tab: 'aqi' };
   }
   tabChange = (key) => {
     this.setState({ tab: key });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { date_array, city1, city2, date_unit } = nextProps;
+    BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], this.state.tab, city1, BaseStore.type.CITY1);
+    BaseStore.fetchCityQuality(date_unit, date_array[0], date_array[date_array.length - 1], city1, BaseStore.type.CITY1);
+    BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], this.state.tab, city2, BaseStore.type.CITY2);
+    BaseStore.fetchCityQuality(date_unit, date_array[0], date_array[date_array.length - 1], city2, BaseStore.type.CITY2);
   }
 
   renderContent = (date_array, city1, city2, date_unit) => {
@@ -55,12 +67,12 @@ export default class CityCompare extends React.Component {
         {
           name: city1,
           type: 'line',
-          data: [120, 132, 101, 134, 90, 230, 210],
+          data: BaseStore.cityDetail1.slice(),
         },
         {
           name: city2,
           type: 'line',
-          data: [220, 182, 191, 234, 290, 330, 310],
+          data: BaseStore.cityDetail2.slice(),
         },
       ],
     };
@@ -105,12 +117,12 @@ export default class CityCompare extends React.Component {
           name: city1,
           type: 'bar',
           barGap: 0,
-          data: [10, 52, 200, 334, 390, 330],
+          data: BaseStore.cityQualityDetailForBar(BaseStore.type.CITY1),
         },
         {
           name: city2,
           type: 'bar',
-          data: [10, 330, 52, 200, 334, 390],
+          data: BaseStore.cityQualityDetailForBar(BaseStore.type.CITY2),
         },
       ],
     };
@@ -131,14 +143,7 @@ export default class CityCompare extends React.Component {
         {
           type: 'pie',
           radius: [0, '50%'],
-          data: [
-                    { value: 335, name: '优' },
-                    { value: 310, name: '良' },
-                    { value: 274, name: '轻度污染' },
-                    { value: 235, name: '中度污染' },
-                    { value: 400, name: '重度污染' },
-                    { value: 100, name: '严重污染' },
-          ],
+          data: city === this.props.city1 ? BaseStore.cityQualityDetail1.slice() : BaseStore.cityQualityDetail2.slice(),
         },
       ],
     };
@@ -150,7 +155,7 @@ export default class CityCompare extends React.Component {
     const { date_array, city1, city2, date_unit } = this.props;
     return (
       <Tabs defaultActiveKey="AQI" onChange={this.tabChange} type="card">
-        <TabPane tab="AQI" key="AQI">
+        <TabPane tab="AQI" key="aqi">
           <Row>
             <Col span={18}>
               <ReactEcharts
@@ -176,10 +181,10 @@ export default class CityCompare extends React.Component {
             </Col>
           </Row>
         </TabPane>
-        <TabPane tab="PM2.5" key="PM2.5">
+        <TabPane tab="PM2.5" key="pm25">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab="PM10" key="PM10">                
+        <TabPane tab="PM10" key="pm10">                
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
         <TabPane tab="SO2" key="SO2">

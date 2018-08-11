@@ -219,7 +219,7 @@ export default class City extends React.Component {
           name: city,
           type: 'bar',
           barGap: 0,
-          data: BaseStore.cityQualityDetailForBar.slice(),
+          data: BaseStore.cityQualityDetailForBar().slice(),
         },
       ],
     };

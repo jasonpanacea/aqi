@@ -20,6 +20,12 @@ class BaseStore {
     @observable detailCity = '北京市';
 
     @observable detailProvince = '';
+
+    @observable cityDetail1 = [];
+    @observable cityQualityDetail1 = [];
+
+    @observable cityDetail2 = [];
+    @observable cityQualityDetail2 = [];
   
     @computed get ready() {
       return !this.initial && !this.loading;
@@ -32,17 +38,20 @@ class BaseStore {
   set detailProvince(province) {
     this.detailProvince = province;
   }
-  @computed get cityQualityDetailForBar() {
+  @action cityQualityDetailForBar(type = this.type.SINGLE) {
     const text = ['优', '良', '轻度污染', '中度污染', '重度污染', '严重污染'];
     const res = [];
-    if (this.cityQualityDetail.length === 0) { return res; }
+    let data = this.cityQualityDetail;
+    if (type === this.type.CITY1) { data = this.cityQualityDetail1; } else if (type === this.type.CITY2) { data = this.cityQualityDetail2; }
+
+    if (data.length === 0) { return res; }
 
     let sum = 0;
-    this.cityQualityDetail.slice().forEach((x) => { sum += x.value; });
+    data.slice().forEach((x) => { sum += x.value; });
     if (sum === 0) { return res; }
     text.forEach((x) => {
       let v = 0;
-      this.cityQualityDetail.slice().forEach((y) => {
+      data.slice().forEach((y) => {
         if (y.name === x) {
           v = Math.round(y.value * 100 / sum);
         }
@@ -58,6 +67,9 @@ class BaseStore {
   }
   get zxs() {
     return ['北京', '上海', '重庆', '天津'];
+  }
+  get type() {
+    return { SINGLE: 'single', CITY1: 'city1', CITY2: 'city2' };
   }
 
   buildQueryParams(date_unit, date_str) {
@@ -328,7 +340,7 @@ class BaseStore {
     return query;
   }
 
-    @action fetchCityDetail(date_unit, start_date, end_date, name, cityName) {
+    @action fetchCityDetail(date_unit, start_date, end_date, name, cityName, type = this.type.SINGLE) {
       const query = this.buildCityDetailQuery(date_unit, start_date, end_date, name, cityName);
       let date_format = 'YYYY-MM-DD HH';
       if (date_unit === '日') { date_format = 'YYYY-MM-DD'; } else if (date_unit === '月') { date_format = 'YYYY-MM'; }
@@ -338,10 +350,24 @@ class BaseStore {
         const sample_size = response.data.queries[0].sample_size;
         this.loading = false;
         this.initial = false;
-        if (sample_size) {
-          this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
-        } else {
-          this.cityDetail = [];
+        if (type === this.type.SINGLE) {
+          if (sample_size) {
+            this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+          } else {
+            this.cityDetail = [];
+          }
+        } else if (type === this.type.CITY1) {
+          if (sample_size) {
+            this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+          } else {
+            this.cityDetail1 = [];
+          }
+        } else if (type === this.type.CITY2) {
+          if (sample_size) {
+            this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+          } else {
+            this.cityDetail2 = [];
+          }
         }
       })
       .catch((err) => {
@@ -390,7 +416,7 @@ class BaseStore {
     return query;
   }
 
-    @action fetchCityQuality(date_unit, start_date, end_date, cityName) {
+    @action fetchCityQuality(date_unit, start_date, end_date, cityName, type = this.type.SINGLE) {
       const query = this.buildCityQualityQuery(date_unit, start_date, end_date, cityName);
       axios.post(this.url, query)
       .then((response) => {
@@ -398,10 +424,24 @@ class BaseStore {
         const sample_size = response.data.queries[0].sample_size;
         this.loading = false;
         this.initial = false;
-        if (sample_size) {
-          this.cityQualityDetail = list.map(x => ({ name: x.tags.quality[0], value: x.values[0][1] }));
-        } else {
-          this.cityQualityDetail = [];
+        if (type === this.type.SINGLE) {
+          if (sample_size) {
+            this.cityQualityDetail = list.map(x => ({ name: x.tags.quality[0], value: x.values[0][1] }));
+          } else {
+            this.cityQualityDetail = [];
+          }
+        } else if (type === this.type.CITY1) {
+          if (sample_size) {
+            this.cityQualityDetail1 = list.map(x => ({ name: x.tags.quality[0], value: x.values[0][1] }));
+          } else {
+            this.cityQualityDetail1 = [];
+          }
+        } else if (type === this.type.CITY2) {
+          if (sample_size) {
+            this.cityQualityDetail2 = list.map(x => ({ name: x.tags.quality[0], value: x.values[0][1] }));
+          } else {
+            this.cityQualityDetail2 = [];
+          }
         }
       })
       .catch((err) => {

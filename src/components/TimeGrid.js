@@ -267,7 +267,7 @@ export default class TimeGrid extends React.Component {
           }
         </Row>
         <Row style={{ marginTop: '20px' }}>
-          {this.props.location.pathname !== '/citycompare' && 
+          {this.props.location.pathname !== '/citycompare' &&
           <Col span={4}>
             <Table 
               dataSource={this.state.date_array} 
