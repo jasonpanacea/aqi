@@ -37,7 +37,6 @@ export default class TimeGrid extends React.Component {
       playing: false,
       selectedDateIndex: 0,
     };
-    RegionStore.fetchList();
   }
 
   componentWillMount() {

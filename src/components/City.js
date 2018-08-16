@@ -37,7 +37,6 @@ export default class City extends React.Component {
       default_range: [moment().subtract(1, 'd'), moment()],
       date_range: [moment().subtract(1, 'd'), moment()],
     };
-    RegionStore.fetchList();
     BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
     BaseStore.fetchCityQuality(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, BaseStore.detailCity);
   }

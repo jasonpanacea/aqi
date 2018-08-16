@@ -1,63 +1,53 @@
 import React from 'react';
 import { Row, Col, Tabs, DatePicker, Table } from 'antd';
 import moment from 'moment';
-
+import { observer } from 'mobx-react';
 import WholeCountry from './WholeCountry';
 import ProvinceOverview from './ProvinceOverview';
+
+import BaseStore from '../stores/BaseStore';
 
 const TabPane = Tabs.TabPane;
 const { MonthPicker } = DatePicker;
 const { Column } = Table;
 
-
+@observer
 export default class CityRank extends React.Component {
 
-  state = {
-    month: moment(),
+  constructor(props) {
+    super(props);
+    this.dateString = moment().format('YYYY-MM');
+    this.activeKey = 'city';
+    this.fetch();
   }
-  tabChange = (key) => {
-    console.log(key);
+
+  tabChange = (activeKey) => {
+    this.activeKey = activeKey;
+    this.fetch();
   }
+
   monthChange = (date, dateString) => {
-    console.log(dateString);
+    this.dateString = dateString;
+    this.fetch();
   }
+
+  fetch = () => {
+    if (this.activeKey === 'city') { BaseStore.fetchCityRank(this.dateString); } else { BaseStore.fetchProvinceRank(this.dateString); }
+  }
+
   render() {
-    const dataSource = [{
-      key: 1,
-      number: 1,
-      city: '三亚',
-      province: '海南',
-      city_count: 10,
-      AQI: 32,
-      pm25: 10,
-      pm10: 16,
-      quality: '优',
-      rank: 1,
-    }, {
-      key: 2,
-      number: 2,
-      city: '海口',
-      province: '海南',
-      city_count: 20,
-      AQI: 32,
-      pm25: 10,
-      pm10: 16,
-      quality: '优',
-      rank: 2,
-    }];
-      
     return (
       <div>
         <Row>
-          <MonthPicker defaultValue={this.state.month} onChange={this.monthChange} allowClear={false} />
+          <MonthPicker defaultValue={moment()} onChange={this.monthChange} allowClear={false} />
         </Row>
         <Row>
-          <Tabs defaultActiveKey="city" onChange={this.tabChange} type="card">
+          <Tabs defaultActiveKey={this.activeKey} onChange={this.tabChange} type="card">
             <TabPane tab="城市排名" key="city">
               <Row>
                 <Col span={10}>
                   <Table 
-                    dataSource={dataSource} 
+                    dataSource={BaseStore.cityRank.slice()} 
                     size="small" 
                     bordered
                     pagination={false}
@@ -65,8 +55,8 @@ export default class CityRank extends React.Component {
                   >
                     <Column
                       title=""
-                      dataIndex="number"
-                      key="number"
+                      dataIndex="rank"
+                      key="rank"
                       width={30}
                     />
                     <Column
@@ -83,10 +73,10 @@ export default class CityRank extends React.Component {
                     />
                     <Column
                       title="AQHI"
-                      dataIndex="AQI"
-                      key="AQI"
+                      dataIndex="aqi"
+                      key="aqi"
                       width={60}
-                      sorter={(a, b) => a.AQI - b.AQI}
+                      sorter={(a, b) => a.aqi - b.aqi}
                     />
                     <Column
                       title="质量等级"
@@ -110,14 +100,14 @@ export default class CityRank extends React.Component {
                     />
                   </Table>
                 </Col>
-                <Col span={14}><WholeCountry /></Col>
+                <Col span={14}><WholeCountry date_unit={'月'} date_str={this.dateString} quality_unit={'aqi'} /></Col>
               </Row>
             </TabPane>
             <TabPane tab="省份排名" key="province">
               <Row>
                 <Col span={10}>
                   <Table 
-                    dataSource={dataSource} 
+                    dataSource={BaseStore.provinceRank.slice()} 
                     size="small" 
                     bordered
                     pagination={false}
@@ -125,8 +115,8 @@ export default class CityRank extends React.Component {
                   >
                     <Column
                       title=""
-                      dataIndex="number"
-                      key="number"
+                      dataIndex="rank"
+                      key="rank"
                       width={30}
                     />
                     <Column
@@ -144,10 +134,10 @@ export default class CityRank extends React.Component {
                     />
                     <Column
                       title="AQHI"
-                      dataIndex="AQI"
-                      key="AQI"
+                      dataIndex="aqi"
+                      key="aqi"
                       width={50}
-                      sorter={(a, b) => a.AQI - b.AQI}
+                      sorter={(a, b) => a.aqi - b.aqi}
                     />
                     <Column
                       title="质量等级"
@@ -171,7 +161,7 @@ export default class CityRank extends React.Component {
                     />
                   </Table>
                 </Col>
-                <Col span={14}><ProvinceOverview /></Col>
+                <Col span={14}><ProvinceOverview date_unit={'月'} date_str={this.dateString} quality_unit={'aqi'} /></Col>
               </Row>
             </TabPane>
           </Tabs>

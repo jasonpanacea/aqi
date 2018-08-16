@@ -7,6 +7,8 @@ import {
     action,
   } from 'mobx';
   
+import RegionStore from './RegionStore';
+
 class BaseStore {
     @observable initial = true;
     @observable loading = false;
@@ -26,6 +28,9 @@ class BaseStore {
 
     @observable cityDetail2 = [];
     @observable cityQualityDetail2 = [];
+
+    @observable cityRank = [];
+    @observable provinceRank = [];
   
     @computed get ready() {
       return !this.initial && !this.loading;
@@ -448,6 +453,237 @@ class BaseStore {
         console.log(err);
       });
     }
+
+
+    @action fetchCityRank(month) {
+      const startDate = moment(month, 'YYYY-MM');
+      const start = startDate.unix() * 1000;
+      const end = startDate.add(startDate.daysInMonth() * 24 - 1, 'h').unix() * 1000;
+      const query = {
+        metrics: [
+          {
+            tags: {},
+            name: 'aqi',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'city',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'pm25',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'city',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'pm10',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'city',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: start,
+        end_absolute: end,
+      };
+      const res = {};
+      axios.post(this.url, query)
+      .then((response) => {
+        const queries = response.data.queries;
+        queries.forEach((q) => {
+          q.results.forEach((result) => {
+            const name = result.name;
+            const city = result.tags.city[0];
+            if (!res[city]) res[city] = {};
+            const province = result.tags.province[0];
+            const value = result.values[0][1];
+            res[city][name] = Math.round(value);
+            if (!res[city].province) res[city].province = province;
+          });
+        });
+        const rank = [];
+        for (const i in res) {
+          rank.push({ 
+            city: i, 
+            province: res[i].province, 
+            aqi: res[i].aqi, 
+            pm25: res[i].pm25, 
+            pm10: res[i].pm10, 
+          });
+        }
+        rank.sort((a, b) => a.aqi - b.aqi);
+        this.cityRank = rank.map((x, index) => ({
+          key: index + 1,
+          rank: index + 1,
+          city: x.city, 
+          province: x.province, 
+          aqi: x.aqi, 
+          pm25: x.pm25, 
+          pm10: x.pm10, 
+        }));
+      });
+    }
+
+    @action fetchProvinceRank(month) {
+      const startDate = moment(month, 'YYYY-MM');
+      const start = startDate.unix() * 1000;
+      const end = startDate.add(startDate.daysInMonth() * 24 - 1, 'h').unix() * 1000;
+      const query = {
+        metrics: [
+          {
+            tags: {},
+            name: 'aqi',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'pm25',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'pm10',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: 'months',
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: start,
+        end_absolute: end,
+      };
+      const res = {};
+      axios.post(this.url, query)
+      .then((response) => {
+        const queries = response.data.queries;
+        queries.forEach((q) => {
+          q.results.forEach((result) => {
+            const name = result.name;
+            const province = result.tags.province[0];
+            if (!res[province]) res[province] = {};
+            const value = result.values[0][1];
+            res[province][name] = Math.round(value);
+          });
+        });
+        const rank = [];
+        for (const i in res) {
+          rank.push({ 
+            province: i,
+            aqi: res[i].aqi, 
+            pm25: res[i].pm25, 
+            pm10: res[i].pm10, 
+          });
+        }
+        rank.sort((a, b) => a.aqi - b.aqi);
+        this.provinceRank = rank.map((x, index) => ({
+          key: index + 1,
+          rank: index + 1,
+          province: x.province, 
+          city_count: RegionStore.cityCount[x.province],
+          aqi: x.aqi, 
+          pm25: x.pm25, 
+          pm10: x.pm10, 
+        }));
+      });
+    }
+
 }
 export { BaseStore };
 export default new BaseStore();
