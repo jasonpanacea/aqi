@@ -2,6 +2,7 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Row, Col, Tabs } from 'antd';
 import { observer } from 'mobx-react';
+import SubItemComponent from './SubItemComponent';
 
 import BaseStore from '../stores/BaseStore';
 
@@ -181,19 +182,19 @@ export default class CityCompare extends React.Component {
             </Col>
           </Row>
         </TabPane>
-        <TabPane tab="PM2.5" key="pm25">
+        <TabPane tab={<SubItemComponent pollution="PM" sub="2.5" />} key="pm25">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab="PM10" key="pm10">                
+        <TabPane tab={<SubItemComponent pollution="PM" sub="10" />} key="pm10">                
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab="SO2" key="SO2">
+        <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="SO2">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab="NO2" key="NO2">
+        <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="NO2">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab="O3" key="O3">
+        <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="O3">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
         <TabPane tab="CO" key="CO">
