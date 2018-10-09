@@ -357,19 +357,19 @@ class BaseStore {
         this.initial = false;
         if (type === this.type.SINGLE) {
           if (sample_size) {
-            this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+            this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
           } else {
             this.cityDetail = [];
           }
         } else if (type === this.type.CITY1) {
           if (sample_size) {
-            this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+            this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
           } else {
             this.cityDetail1 = [];
           }
         } else if (type === this.type.CITY2) {
           if (sample_size) {
-            this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
+            this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
           } else {
             this.cityDetail2 = [];
           }
@@ -553,7 +553,7 @@ class BaseStore {
           rank.push({ 
             city: i, 
             province: res[i].province, 
-            aqi: res[i].aqi, 
+            aqi: Math.round(res[i].aqi / 10), 
             pm25: res[i].pm25, 
             pm10: res[i].pm10, 
           });
@@ -666,7 +666,7 @@ class BaseStore {
         for (const i in res) {
           rank.push({ 
             province: i,
-            aqi: res[i].aqi, 
+            aqi: Math.round(res[i].aqi / 10), 
             pm25: res[i].pm25, 
             pm10: res[i].pm10, 
           });

@@ -49,7 +49,7 @@ export default class ProvinceDetail extends React.Component {
     const option = {
       backgroundColor: '#264a69',
       title: {
-        text: `${this.props.match.params.name}空气质量`,
+        text: `${this.props.match.params.name}AQHI`,
         x: 'center',
         textStyle: {
           color: '#fff',

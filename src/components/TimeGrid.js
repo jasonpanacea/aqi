@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import WholeCountry from './WholeCountry';
 import ProvinceOverview from './ProvinceOverview';
 import CityCompare from './CityCompare';
-
+import SubItemComponent from './SubItemComponent';
 import '../styles/grid.less';
 
 import RegionStore from '../stores/RegionStore';
@@ -255,11 +255,11 @@ export default class TimeGrid extends React.Component {
             <Col span={10}>
               <RadioGroup onChange={this.onQualityUnitChange} value={this.state.quality_unit} size="small">
                 <Radio value={'aqi'}>AQHI</Radio>
-                <Radio value={'pm25'}>PM2.5</Radio>
-                <Radio value={'pm10'}>PM10</Radio>
-                <Radio value={'SO2'}>SO2</Radio>
-                <Radio value={'NO2'}>NO2</Radio>
-                <Radio value={'O3'}>O3</Radio>
+                <Radio value={'pm25'}>{<SubItemComponent pollution="PM" sub="2.5" />}</Radio>
+                <Radio value={'pm10'}>{<SubItemComponent pollution="PM" sub="10" />}</Radio>
+                <Radio value={'SO2'}>{<SubItemComponent pollution="SO" sub="2.5" />}</Radio>
+                <Radio value={'NO2'}>{<SubItemComponent pollution="NO" sub="2" />}</Radio>
+                <Radio value={'O3'}>{<SubItemComponent pollution="O" sub="3" />}</Radio>
                 <Radio value={'CO'}>CO</Radio>
               </RadioGroup>
             </Col>
@@ -267,7 +267,7 @@ export default class TimeGrid extends React.Component {
         </Row>
         <Row style={{ marginTop: '20px' }}>
           {this.props.location.pathname !== '/citycompare' &&
-          <Col span={4}>
+          <Col span={3}>
             <Table 
               dataSource={this.state.date_array} 
               size="small" 
@@ -284,14 +284,8 @@ export default class TimeGrid extends React.Component {
               }}
             >
               <Column
-                title={<Button type="primary" onClick={this.changePlayStatus} icon={this.state.playing ? 'pause-circle-o' : 'play-circle-o'} size="small" >{this.state.playing ? '暂停' : '播放'}</Button>}
-                dataIndex="number"
-                key="number"
-                width={40}
-                className="index-column"
-              />
-              <Column
-                title="监测时间点"
+                title={<Button type="primary" onClick={this.changePlayStatus} icon={this.state.playing ? 'pause-circle-o' : 'play-circle-o'} size="small" >监测时间点</Button>}
+                align="center"
                 dataIndex="date_str"
                 key="date_str"
                 width={50}
@@ -300,7 +294,7 @@ export default class TimeGrid extends React.Component {
           
           </Col>
         }
-          <Col span={this.props.location.pathname === '/citycompare' ? 24 : 20}>{this.renderContent()}</Col>
+          <Col span={this.props.location.pathname === '/citycompare' ? 24 : 21}>{this.renderContent()}</Col>
         </Row>
       </div>        
         

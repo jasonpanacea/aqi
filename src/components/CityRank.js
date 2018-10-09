@@ -4,7 +4,7 @@ import moment from 'moment';
 import { observer } from 'mobx-react';
 import WholeCountry from './WholeCountry';
 import ProvinceOverview from './ProvinceOverview';
-
+import SubItemComponent from './SubItemComponent';
 import BaseStore from '../stores/BaseStore';
 
 const TabPane = Tabs.TabPane;
@@ -78,21 +78,21 @@ export default class CityRank extends React.Component {
                       width={60}
                       sorter={(a, b) => a.aqi - b.aqi}
                     />
-                    <Column
+                    {/* <Column
                       title="质量等级"
                       dataIndex="quality"
                       key="quality"
                       width={60}
-                    />
+                    /> */}
                     <Column
-                      title="pm25"
+                      title={<SubItemComponent pollution="PM" sub="2.5" />}
                       dataIndex="pm25"
                       key="pm25"
                       width={60}
                       sorter={(a, b) => a.pm25 - b.pm25}
                     />
                     <Column
-                      title="pm10"
+                      title={<SubItemComponent pollution="PM" sub="10" />}
                       dataIndex="pm10"
                       key="pm10"
                       width={70}
@@ -146,14 +146,14 @@ export default class CityRank extends React.Component {
                       width={60}
                     />
                     <Column
-                      title="pm25"
+                      title={<SubItemComponent pollution="PM" sub="2.5" />}
                       dataIndex="pm25"
                       key="pm25"
                       width={50}
                       sorter={(a, b) => a.pm25 - b.pm25}
                     />
                     <Column
-                      title="pm10"
+                      title={<SubItemComponent pollution="PM" sub="10" />}
                       dataIndex="pm10"
                       key="pm10"
                       width={50}

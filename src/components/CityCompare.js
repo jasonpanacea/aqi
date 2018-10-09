@@ -42,7 +42,7 @@ export default class CityCompare extends React.Component {
   getLineOption = (date_array, city1, city2, date_unit) => {
     const option = {
       title: {
-        text: `${city1} VS ${city2} ${date_unit}${this.state.tab}变化趋势`,
+        text: `${city1} VS ${city2} ${date_unit}AQHI变化趋势`,
         top: 'top',
         left: 'center',
       },
@@ -132,7 +132,7 @@ export default class CityCompare extends React.Component {
   getPieOption = (city, date_unit) => {
     const option = {
       title: {
-        text: `${city}${date_unit}AQI分布情况`,
+        text: `${city}${date_unit}AQHI分布情况`,
         left: 'center',
       },
       tooltip: {
@@ -155,7 +155,7 @@ export default class CityCompare extends React.Component {
     const { date_array, city1, city2, date_unit } = this.props;
     return (
       <Tabs defaultActiveKey="AQI" onChange={this.tabChange} type="card">
-        <TabPane tab="AQI" key="aqi">
+        <TabPane tab="AQHI" key="aqi">
           <Row>
             <Col span={18}>
               <ReactEcharts

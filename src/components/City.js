@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Radio, DatePicker, Tabs, Cascader, Button } from 'antd';
 import moment from 'moment';
-
+import SubItemComponent from './SubItemComponent';
 import RegionStore from '../stores/RegionStore';
 import BaseStore from '../stores/BaseStore';
 
@@ -148,7 +148,7 @@ export default class City extends React.Component {
   getLineOption = (date_array, city, date_unit) => {
     const option = {
       title: {
-        text: `${city} ${date_unit}${this.state.tab}变化趋势`,
+        text: `${city} ${date_unit}AQHI变化趋势`,
         top: 'top',
         left: 'center',
       },
@@ -228,7 +228,7 @@ export default class City extends React.Component {
   getPieOption = (city, date_unit) => {
     const option = {
       title: {
-        text: `${city}${date_unit}AQI分布情况`,
+        text: `${city}${date_unit}AQHI分布情况`,
         left: 'center',
       },
       tooltip: {
@@ -273,7 +273,7 @@ export default class City extends React.Component {
           </Col>
         </Row>
         <Tabs defaultActiveKey="aqi" onChange={this.tabChange} type="card" style={{ marginTop: '20px' }}>
-          <TabPane tab="AQI" key="aqi">
+          <TabPane tab="AQHI" key="aqi">
             <Row>
               <Col span={18}>
                 <ReactEcharts
@@ -294,19 +294,19 @@ export default class City extends React.Component {
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="PM2.5" key="pm25">
+          <TabPane tab={<SubItemComponent pollution="PM" sub="2.5" />} key="pm25">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="PM10" key="pm10">                
+          <TabPane tab={<SubItemComponent pollution="PM" sub="10" />} key="pm10">                
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="SO2" key="SO2">
+          <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="SO2">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="NO2" key="NO2">
+          <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="NO2">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="O3" key="O3">
+          <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="O3">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
           <TabPane tab="CO" key="CO">
