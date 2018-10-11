@@ -110,6 +110,7 @@ export default class CityCompare extends React.Component {
       ],
       yAxis: [
         {
+          name: '百分比%',
           type: 'value',
         },
       ],

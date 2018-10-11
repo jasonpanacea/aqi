@@ -61,7 +61,7 @@ export default class ProvinceDetail extends React.Component {
       },
       visualMap: {
         min: 0,
-        max: 500,
+        max: 20,
         text: ['High', 'Low'],
         realtime: false,
         calculable: true,
