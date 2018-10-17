@@ -57,45 +57,38 @@ export default class CityRank extends React.Component {
                       title=""
                       dataIndex="rank"
                       key="rank"
-                      width={30}
+                      width={40}
                     />
                     <Column
                       title="城市"
                       dataIndex="city"
                       key="city"
-                      width={50}
+                      width={110}
                     />
                     <Column
                       title="省份"
                       dataIndex="province"
                       key="province"
-                      width={50}
+                      width={110}
                     />
                     <Column
                       title="AQHI"
                       dataIndex="aqi"
                       key="aqi"
-                      width={60}
+                      width={80}
                       sorter={(a, b) => a.aqi - b.aqi}
                     />
-                    {/* <Column
-                      title="质量等级"
-                      dataIndex="quality"
-                      key="quality"
-                      width={60}
-                    /> */}
                     <Column
                       title={<SubItemComponent pollution="PM" sub="2.5" />}
                       dataIndex="pm25"
                       key="pm25"
-                      width={60}
+                      width={80}
                       sorter={(a, b) => a.pm25 - b.pm25}
                     />
                     <Column
                       title={<SubItemComponent pollution="PM" sub="10" />}
                       dataIndex="pm10"
                       key="pm10"
-                      width={70}
                       sorter={(a, b) => a.pm10 - b.pm10}
                     />
                   </Table>
@@ -117,46 +110,39 @@ export default class CityRank extends React.Component {
                       title=""
                       dataIndex="rank"
                       key="rank"
-                      width={30}
+                      width={40}
                     />
                     <Column
                       title="省份"
                       dataIndex="province"
                       key="province"
-                      width={50}
+                      width={100}
                     />
                     <Column
                       title="城市数"
                       dataIndex="city_count"
                       key="city_count"
-                      width={50}
+                      width={90}
                       sorter={(a, b) => a.city_count - b.city_count}
                     />
                     <Column
                       title="AQHI"
                       dataIndex="aqi"
                       key="aqi"
-                      width={50}
+                      width={90}
                       sorter={(a, b) => a.aqi - b.aqi}
-                    />
-                    <Column
-                      title="质量等级"
-                      dataIndex="quality"
-                      key="quality"
-                      width={60}
                     />
                     <Column
                       title={<SubItemComponent pollution="PM" sub="2.5" />}
                       dataIndex="pm25"
                       key="pm25"
-                      width={50}
+                      width={90}
                       sorter={(a, b) => a.pm25 - b.pm25}
                     />
                     <Column
                       title={<SubItemComponent pollution="PM" sub="10" />}
                       dataIndex="pm10"
                       key="pm10"
-                      width={50}
                       sorter={(a, b) => a.pm10 - b.pm10}
                     />
                   </Table>

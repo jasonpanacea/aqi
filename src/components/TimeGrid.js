@@ -40,13 +40,13 @@ export default class TimeGrid extends React.Component {
   }
 
   componentWillMount() {
-    let cur = moment().subtract(1, 'd');
-    const end = moment();
+    let cur = moment();
+    const end = moment().subtract(1, 'd');
     let count = 1;
     const date_array = [];
-    while (cur.isBefore(end) || cur.isSame(end)) {
+    while (cur.isAfter(end) || cur.isSame(end)) {
       date_array.push({ key: count, number: count, date_str: cur.format(this.state.date_range_format) });
-      cur = cur.add(1, 'h');
+      cur = cur.add(-1, 'h');
       count += 1;
     }
     this.setState({
@@ -111,13 +111,13 @@ export default class TimeGrid extends React.Component {
       start = moment().subtract(12, 'M');
       date_range_format = 'YYYY-MM';
     }
-    let cur = start;
-    const end = moment();
+    let cur = moment();
+    const end = start;
     let count = 1;
     const date_array = [];
-    while (cur.isBefore(end) || cur.isSame(end)) {
+    while (cur.isAfter(end) || cur.isSame(end)) {
       date_array.push({ key: count, number: count, date_str: cur.format(date_range_format) });
-      cur = cur.add(1, unit);
+      cur = cur.add(-1, unit);
       count += 1;
     }
     this.setState({
@@ -134,8 +134,8 @@ export default class TimeGrid extends React.Component {
   onDateChange = (dates, dateStrings) => {
     this.setState({ date_range: dates });
     const start = moment(dateStrings[0], this.state.date_range_format);
-    const end = moment(dateStrings[1], this.state.date_range_format);
-    let cur = start;
+    let cur = moment(dateStrings[1], this.state.date_range_format);
+    const end = start;
     let unit;
     if (this.state.date_unit === '小时') {
       unit = 'h';
@@ -146,9 +146,9 @@ export default class TimeGrid extends React.Component {
     }
     let count = 1;
     const date_array = [];
-    while (cur.isBefore(end) || cur.isSame(end)) {
+    while (cur.isAfter(end) || cur.isSame(end)) {
       date_array.push({ key: count, number: count, date_str: cur.format(this.state.date_range_format) });
-      cur = cur.add(1, unit);
+      cur = cur.add(-1, unit);
       count += 1;
     }
     this.setState({
@@ -162,7 +162,7 @@ export default class TimeGrid extends React.Component {
     } else if (this.props.location.pathname === '/province') {
       return <ProvinceOverview date_str={this.state.date_array[this.state.selectedDateIndex].date_str} date_unit={this.state.date_unit} quality_unit={this.state.quality_unit} />;
     } else if (this.props.location.pathname === '/citycompare') {
-      return <CityCompare date_array={this.state.date_array.map(x => x.date_str)} city1={this.state.city1} city2={this.state.city2} date_unit={this.state.date_unit} />;
+      return <CityCompare date_array={this.state.date_array.map(x => x.date_str).reverse()} city1={this.state.city1} city2={this.state.city2} date_unit={this.state.date_unit} />;
     }
   }
 
