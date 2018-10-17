@@ -7,6 +7,7 @@ import moment from 'moment';
 import SubItemComponent from './SubItemComponent';
 import RegionStore from '../stores/RegionStore';
 import BaseStore from '../stores/BaseStore';
+import AQHITransformer from '../utils/AQHITransformer';
 
 const TabPane = Tabs.TabPane;
 const RadioGroup = Radio.Group;
@@ -148,7 +149,7 @@ export default class City extends React.Component {
   getLineOption = (date_array, city, date_unit) => {
     const option = {
       title: {
-        text: `${city} ${date_unit}AQHI变化趋势`,
+        text: `${city} ${date_unit}${AQHITransformer.transformQualityUnitText(this.state.tab)}变化趋势`,
         top: 'top',
         left: 'center',
       },
@@ -229,7 +230,7 @@ export default class City extends React.Component {
   getPieOption = (city, date_unit) => {
     const option = {
       title: {
-        text: `${city}${date_unit}AQHI分布情况`,
+        text: `${city}${date_unit}${AQHITransformer.transformQualityUnitText(this.state.tab)}分布情况`,
         left: 'center',
       },
       tooltip: {
@@ -301,16 +302,16 @@ export default class City extends React.Component {
           <TabPane tab={<SubItemComponent pollution="PM" sub="10" />} key="pm10">                
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="SO2">
+          <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="so2">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="NO2">
+          <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="no2">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="O3">
+          <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="o3">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
-          <TabPane tab="CO" key="CO">
+          <TabPane tab="CO" key="co">
             {this.renderContent(date_array, BaseStore.detailCity, this.state.date_unit)}
           </TabPane>
         </Tabs>

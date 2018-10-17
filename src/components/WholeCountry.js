@@ -3,9 +3,10 @@ import ReactEcharts from 'echarts-for-react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import 'echarts/extension/bmap/bmap';
-import { Spin, Card, Icon, Button } from 'antd';
+import { Card, Icon, Button } from 'antd';
 
 import BaseStore from '../stores/BaseStore';
+import AQHITransformer from '../utils/AQHITransformer';
 
 import '../styles/WholeCountry.less';
 
@@ -40,7 +41,7 @@ export default class WholeCountry extends React.Component {
   getOption = (center = [104.114129, 37.550339], zoomLevel = 5) => {
     const option = {
       title: {
-        text: '全国主要城市AQHI',
+        text: `全国主要城市${AQHITransformer.transformQualityUnitText(this.props.quality_unit)}`,
         left: 'center',
       },
       tooltip: {
@@ -109,19 +110,6 @@ export default class WholeCountry extends React.Component {
           type: 'scatter',
           coordinateSystem: 'bmap',
           data: BaseStore.wholeCountryList.slice(),
-          label: {
-            normal: {
-              formatter: 
-                function format(val) {
-                  return '';
-                }, 
-              position: 'right',
-              show: true,
-            },
-            emphasis: {
-              show: true,
-            },
-          },
           itemStyle: {
             normal: {
               color(val) {
@@ -191,7 +179,7 @@ export default class WholeCountry extends React.Component {
         <ReactEcharts
           ref={(e) => { this.echarts_react = e; }}  
           option={this.getOption(this.center, this.zoomLevel)}
-          style={{ height: '650px', width: '100%' }}
+          style={{ height: '700px', width: '100%' }}
           className="react_for_echarts"
           onEvents={onEvents}
         />

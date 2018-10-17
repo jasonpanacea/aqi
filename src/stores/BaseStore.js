@@ -68,7 +68,7 @@ class BaseStore {
 
 
   get url() {
-    return 'http://127.0.0.1:8080/api/v1/datapoints/query';
+    return 'http://cepht.niehs.cn:5443/tsdb/api/v1/datapoints/query';
   }
   get zxs() {
     return ['北京', '上海', '重庆', '天津'];

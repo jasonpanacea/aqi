@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import SubItemComponent from './SubItemComponent';
 
 import BaseStore from '../stores/BaseStore';
+import AQHITransformer from '../utils/AQHITransformer';
 
 const TabPane = Tabs.TabPane;
 
@@ -43,7 +44,7 @@ export default class CityCompare extends React.Component {
   getLineOption = (date_array, city1, city2, date_unit) => {
     const option = {
       title: {
-        text: `${city1} VS ${city2} ${date_unit}AQHI变化趋势`,
+        text: `${city1} VS ${city2} ${date_unit}${AQHITransformer.transformQualityUnitText(this.state.tab)}变化趋势`,
         top: 'top',
         left: 'center',
       },
@@ -189,13 +190,13 @@ export default class CityCompare extends React.Component {
         <TabPane tab={<SubItemComponent pollution="PM" sub="10" />} key="pm10">                
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="SO2">
+        <TabPane tab={<SubItemComponent pollution="SO" sub="2" />} key="so2">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="NO2">
+        <TabPane tab={<SubItemComponent pollution="NO" sub="2" />} key="no2">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
-        <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="O3">
+        <TabPane tab={<SubItemComponent pollution="O" sub="3" />} key="o3">
           {this.renderContent(date_array, city1, city2, date_unit)}
         </TabPane>
         <TabPane tab="CO" key="CO">

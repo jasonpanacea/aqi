@@ -154,7 +154,6 @@ export default class TimeGrid extends React.Component {
     this.setState({
       date_array,
     });
-    BaseStore.fetchList(this.state.date_unit, date_array[0].date_str, this.state.quality_unit);
   }
 
   renderContent = () => {
@@ -257,10 +256,10 @@ export default class TimeGrid extends React.Component {
                 <Radio value={'aqi'}>AQHI</Radio>
                 <Radio value={'pm25'}>{<SubItemComponent pollution="PM" sub="2.5" />}</Radio>
                 <Radio value={'pm10'}>{<SubItemComponent pollution="PM" sub="10" />}</Radio>
-                <Radio value={'SO2'}>{<SubItemComponent pollution="SO" sub="2.5" />}</Radio>
-                <Radio value={'NO2'}>{<SubItemComponent pollution="NO" sub="2" />}</Radio>
-                <Radio value={'O3'}>{<SubItemComponent pollution="O" sub="3" />}</Radio>
-                <Radio value={'CO'}>CO</Radio>
+                <Radio value={'so2'}>{<SubItemComponent pollution="SO" sub="2" />}</Radio>
+                <Radio value={'no2'}>{<SubItemComponent pollution="NO" sub="2" />}</Radio>
+                <Radio value={'o3'}>{<SubItemComponent pollution="O" sub="3" />}</Radio>
+                <Radio value={'co'}>CO</Radio>
               </RadioGroup>
             </Col>
           }

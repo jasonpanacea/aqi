@@ -7,6 +7,7 @@ import 'echarts/map/js/china.js';
 
 import BaseStore from '../stores/BaseStore';
 import ProvinceDetail from './ProvinceDetail';
+import AQHITransformer from '../utils/AQHITransformer';
 
 
 @withRouter
@@ -21,7 +22,7 @@ export default class ProvinceOverview extends React.Component {
     const option = {
       backgroundColor: '#264a69',
       title: {
-        text: '全国主要城市空气质量',
+        text: `全国主要城市${AQHITransformer.transformQualityUnitText(this.props.quality_unit)}`,
         x: 'center',
         textStyle: {
           color: '#fff',
@@ -29,14 +30,15 @@ export default class ProvinceOverview extends React.Component {
       },
       tooltip: {
         trigger: 'item',
-        formatter: `{b}<br/>${this.props.quality_unit}: {c}`,
+        formatter: `{b}<br/>${AQHITransformer.transformQualityUnitText(this.props.quality_unit)}: {c}`,
       },
       visualMap: {
         min: 0,
-        max: 500,
-        text: ['High', 'Low'],
-        inRange: {
-          color: ['lightskyblue', 'yellow', 'orangered'],
+        max: 200,
+        splitNumber: 5,
+        color: ['#d94e5d', '#eac736', '#50a3ba'],
+        textStyle: {
+          color: '#fff',
         },
       },
       series: [
@@ -68,7 +70,7 @@ export default class ProvinceOverview extends React.Component {
     return (
       <ReactEcharts
         option={this.getOption()}
-        style={{ height: '600px', width: '100%' }}
+        style={{ height: '650px', width: '100%' }}
         onEvents={onEvents}
       />
     );
