@@ -147,6 +147,7 @@ export default class City extends React.Component {
 
 
   getLineOption = (date_array, city, date_unit) => {
+    // console.log(BaseStore.cityDetail.slice());
     const option = {
       title: {
         text: `${city} ${date_unit}${AQHITransformer.transformQualityUnitText(this.state.tab)}变化趋势`,

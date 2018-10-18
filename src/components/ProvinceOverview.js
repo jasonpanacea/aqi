@@ -2,7 +2,7 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-
+import _ from 'lodash';
 import 'echarts/map/js/china.js';
 
 import BaseStore from '../stores/BaseStore';
@@ -34,8 +34,9 @@ export default class ProvinceOverview extends React.Component {
       },
       visualMap: {
         min: 0,
-        max: 200,
+        max: _.max(BaseStore.provinceList.slice().map(x => x.value)),
         splitNumber: 5,
+        precision: 0,
         color: ['#d94e5d', '#eac736', '#50a3ba'],
         textStyle: {
           color: '#fff',

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import moment from 'moment';
+import moment, { min } from 'moment';
 
 import {
     observable,
@@ -8,6 +8,7 @@ import {
   } from 'mobx';
   
 import RegionStore from './RegionStore';
+import AQHITransformer from '../utils/AQHITransformer';
 
 class BaseStore {
     @observable initial = true;
@@ -122,71 +123,185 @@ class BaseStore {
 
   buildWholeCountryQuery(date_unit, date_str, name) {
     const params = this.buildQueryParams(date_unit, date_str);
-    const query = {
-      metrics: [
-        {
-          tags: {},
-          name,
-          group_by: [
-            {
-              name: 'tag',
-              tags: [
-                'position_name',
-              ],
-            },
-          ],
-          aggregators: [
-            {
-              name: 'avg',
-              sampling: {
-                value: '1',
-                unit: params[2],
+    let query;
+    if (name === 'aqi') {
+      query = {
+        metrics: [
+          {
+            tags: {},
+            name: 'pm25',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'position_name',
+                ],
               },
-              align_start_time: true,
-            },
-          ],
-        },
-      ],
-      plugins: [],
-      cache_time: 0,
-      start_absolute: params[0],
-      end_absolute: params[1],
-    };
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'o3',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'position_name',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    } else {
+      query = {
+        metrics: [
+          {
+            tags: {},
+            name,
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'position_name',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    }
+    
     return query;
   }
 
   buildProvinceListQuery(date_unit, date_str, name) {
     const params = this.buildQueryParams(date_unit, date_str);
-    const query = {
-      metrics: [
-        {
-          tags: {},
-          name,
-          group_by: [
-            {
-              name: 'tag',
-              tags: [
-                'province',
-              ],
-            },
-          ],
-          aggregators: [
-            {
-              name: 'avg',
-              sampling: {
-                value: '1',
-                unit: params[2],
+    let query;
+    if (name === 'aqi') {
+      query = {
+        metrics: [
+          {
+            tags: {},
+            name: 'pm25',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
               },
-              align_start_time: true,
-            },
-          ],
-        },
-      ],
-      plugins: [],
-      cache_time: 0,
-      start_absolute: params[0],
-      end_absolute: params[1],
-    };
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+          {
+            tags: {},
+            name: 'o3',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    } else {
+      query = {
+        metrics: [
+          {
+            tags: {},
+            name,
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  'province',
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    }
+    
     return query;
   }
 
@@ -243,17 +358,33 @@ class BaseStore {
       const query = this.buildWholeCountryQuery(date_unit, date_str, name);
       axios.post(this.url, query)
           .then((response) => {
-            const list = response.data.queries[0].results;
             const sample_size = response.data.queries[0].sample_size;
             this.loading = false;
             this.initial = false;
             if (sample_size) {
-              this.wholeCountryList = list.map(x => (
-                { 
-                  name: x.tags.city[0], 
-                  value: [x.tags.longtitude[0], x.tags.latitude[0], Math.round(x.values[0][1]), x.tags.quality[0], x.tags.city[0], x.tags.position_name[0], x.tags.province[0]],
-                })
-              );
+              if (name === 'aqi') {
+                const tempList = [];
+                const pm25List = response.data.queries[0].results;
+                const o3List = response.data.queries[1].results;
+                for (let i = 0; i < Math.min(pm25List.length, o3List.length); i += 1) {
+                  const x = pm25List[i];
+                  const y = o3List[i];
+                  const aqhi = AQHITransformer.caculateAQHI(Math.round(x.values[0][1]), Math.round(y.values[0][1]));
+                  tempList.push({
+                    name: x.tags.city[0], 
+                    value: [x.tags.longtitude[0], x.tags.latitude[0], aqhi, x.tags.quality[0], x.tags.city[0], x.tags.position_name[0], x.tags.province[0]],
+                  });
+                }
+                this.wholeCountryList = tempList.slice();
+              } else {
+                const list = response.data.queries[0].results;
+                this.wholeCountryList = list.map(x => (
+                  { 
+                    name: x.tags.city[0], 
+                    value: [x.tags.longtitude[0], x.tags.latitude[0], Math.round(x.values[0][1]), x.tags.quality[0], x.tags.city[0], x.tags.position_name[0], x.tags.province[0]],
+                  })
+                );
+              }
             } else {
               this.wholeCountryList = [];
             }
@@ -269,17 +400,33 @@ class BaseStore {
       const query = this.buildProvinceListQuery(date_unit, date_str, name);
       axios.post(this.url, query)
           .then((response) => {
-            const list = response.data.queries[0].results;
             const sample_size = response.data.queries[0].sample_size;
             this.loading = false;
             this.initial = false;
             if (sample_size) {
-              this.provinceList = list.map(x => (
-                { 
-                  name: x.tags.province[0].substring(0, x.tags.province[0].length - 1), 
-                  value: Math.round(x.values[0][1]),
-                })
-              );
+              if (name === 'aqi') {
+                const tempList = [];
+                const pm25List = response.data.queries[0].results;
+                const o3List = response.data.queries[1].results;
+                for (let i = 0; i < Math.min(pm25List.length, o3List.length); i += 1) {
+                  const x = pm25List[i];
+                  const y = o3List[i];
+                  const aqhi = AQHITransformer.caculateAQHI(Math.round(x.values[0][1]), Math.round(y.values[0][1]));
+                  tempList.push({
+                    name: x.tags.province[0].substring(0, x.tags.province[0].length - 1), 
+                    value: aqhi,
+                  });
+                }
+                this.provinceList = tempList.slice();
+              } else {
+                const list = response.data.queries[0].results;
+                this.provinceList = list.map(x => (
+                  { 
+                    name: x.tags.province[0].substring(0, x.tags.province[0].length - 1), 
+                    value: Math.round(x.values[0][1]),
+                  })
+                );
+              }
             } else {
               this.provinceList = [];
             }
@@ -316,32 +463,80 @@ class BaseStore {
   buildCityDetailQuery(date_unit, start_date, end_date, name, cityName) {
     const params = this.buildQueryParamsForCity(date_unit, start_date, end_date);
     const city = cityName;
-    const query = {
-      metrics: [
-        {
-          tags: {
-            city: [
-              city,
+    let query;
+    if (name === 'aqi') {
+      query = {
+        metrics: [
+          {
+            tags: {
+              city: [
+                city,
+              ],
+            },
+            name: 'pm25',
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
             ],
           },
-          name,
-          aggregators: [
-            {
-              name: 'avg',
-              sampling: {
-                value: '1',
-                unit: params[2],
-              },
-              align_start_time: true,
+          {
+            tags: {
+              city: [
+                city,
+              ],
             },
-          ],
-        },
-      ],
-      plugins: [],
-      cache_time: 0,
-      start_absolute: params[0],
-      end_absolute: params[1],
-    };
+            name: 'o3',
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    } else {
+      query = {
+        metrics: [
+          {
+            tags: {
+              city: [
+                city,
+              ],
+            },
+            name,
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    }
     return query;
   }
 
@@ -351,27 +546,58 @@ class BaseStore {
       if (date_unit === '日') { date_format = 'YYYY-MM-DD'; } else if (date_unit === '月') { date_format = 'YYYY-MM'; }
       axios.post(this.url, query)
       .then((response) => {
-        const list = response.data.queries[0].results;
         const sample_size = response.data.queries[0].sample_size;
         this.loading = false;
         this.initial = false;
-        if (type === this.type.SINGLE) {
-          if (sample_size) {
-            this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
-          } else {
-            this.cityDetail = [];
+        if (name === 'aqi') {
+          const tempList = [];
+          const pm25List = response.data.queries[0].results[0].values;
+          const o3List = response.data.queries[1].results[0].values;
+          for (let i = 0; i < Math.min(pm25List.length, o3List.length); i += 1) {
+            const x = pm25List[i];
+            const y = o3List[i];
+            const aqhi = AQHITransformer.caculateAQHI(Math.round(x[1]), Math.round(y[1]));
+            tempList.push([moment(x[0]).format(date_format), aqhi]);
           }
-        } else if (type === this.type.CITY1) {
-          if (sample_size) {
-            this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
-          } else {
-            this.cityDetail1 = [];
+          if (type === this.type.SINGLE) {
+            if (sample_size) {
+              this.cityDetail = tempList.map(x => x);
+            } else {
+              this.cityDetail = [];
+            }
+          } else if (type === this.type.CITY1) {
+            if (sample_size) {
+              this.cityDetail1 = tempList.splice();
+            } else {
+              this.cityDetail1 = [];
+            }
+          } else if (type === this.type.CITY2) {
+            if (sample_size) {
+              this.cityDetail2 = tempList.splice();
+            } else {
+              this.cityDetail2 = [];
+            }
           }
-        } else if (type === this.type.CITY2) {
-          if (sample_size) {
-            this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
-          } else {
-            this.cityDetail2 = [];
+        } else {
+          const list = response.data.queries[0].results;
+          if (type === this.type.SINGLE) {
+            if (sample_size) {
+              this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+            } else {
+              this.cityDetail = [];
+            }
+          } else if (type === this.type.CITY1) {
+            if (sample_size) {
+              this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+            } else {
+              this.cityDetail1 = [];
+            }
+          } else if (type === this.type.CITY2) {
+            if (sample_size) {
+              this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+            } else {
+              this.cityDetail2 = [];
+            }
           }
         }
       })

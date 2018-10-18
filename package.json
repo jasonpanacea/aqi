@@ -8,7 +8,7 @@
     "axios": "^0.18.0",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.8",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.11",
     "mobx": "^4.3.0",
     "mobx-react": "^5.1.2",
     "moment": "^2.19.3",

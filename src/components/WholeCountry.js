@@ -113,7 +113,6 @@ export default class WholeCountry extends React.Component {
           itemStyle: {
             normal: {
               color(val) {
-                // return '#e4f33e';
                 if (val.data.value[3] === '优良') {
                   return '#32f43e';
                 } else if (val.data.value[3] === '良') {
@@ -149,7 +148,6 @@ export default class WholeCountry extends React.Component {
   }
 
   click = (params) => {
-    console.log(params);
     this.changeCenter = false;
     this.locateCenter = [params.value[0], params.value[1]];
     this.cityname = params.name;
