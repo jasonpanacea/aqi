@@ -59,7 +59,7 @@ class RegionStore {
 
     @action fetchRegionList(payload = {}) {
       this.loading = true;
-      axios.get('/region.json', payload)
+      axios.get('./region.json', payload)
           .then((response) => {
             this.list = response.data.districts;
             this.loading = false;
