@@ -39,7 +39,6 @@ export default class City extends React.Component {
       date_range: [moment().subtract(1, 'd'), moment()],
     };
     BaseStore.fetchCityDetail(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, this.state.tab, BaseStore.detailCity);
-    BaseStore.fetchCityQuality(this.state.date_unit, date_array[0].date_str, date_array[date_array.length - 1].date_str, BaseStore.detailCity);
   }
 
   tabChange = (key) => {
@@ -51,7 +50,6 @@ export default class City extends React.Component {
     const city = selectedOptions[selectedOptions.length - 1].label;
     BaseStore.detailCity = city;
     BaseStore.fetchCityDetail(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, this.state.tab, city);
-    BaseStore.fetchCityQuality(this.state.date_unit, this.state.date_array[0].date_str, this.state.date_array[this.state.date_array.length - 1].date_str, city);
   }
 
   onDateUnitChange = (e) => {
@@ -242,7 +240,7 @@ export default class City extends React.Component {
         {
           type: 'pie',
           radius: [0, '50%'],
-          data: BaseStore.cityQualityDetail.slice(),
+          data: BaseStore.risksMap.slice(),
         },
       ],
     };
@@ -278,21 +276,16 @@ export default class City extends React.Component {
         <Tabs defaultActiveKey="aqi" onChange={this.tabChange} type="card" style={{ marginTop: '20px' }}>
           <TabPane tab="AQHI" key="aqi">
             <Row>
-              <Col span={18}>
+              <Col span={24}>
                 <ReactEcharts
                   option={this.getLineOption(date_array, BaseStore.detailCity, this.state.date_unit)}
                 />
               </Col>
-              <Col span={6}>
-                <ReactEcharts
-                  option={this.getPieOption(BaseStore.detailCity, this.state.date_unit)}
-                />
-              </Col>
             </Row>
             <Row style={{ marginTop: '20px' }}>
-              <Col span={16}>
+              <Col span={24}>
                 <ReactEcharts
-                  option={this.getBarOption(BaseStore.detailCity, this.state.date_unit)}
+                  option={this.getPieOption(BaseStore.detailCity, this.state.date_unit)}
                 />
               </Col>
             </Row>

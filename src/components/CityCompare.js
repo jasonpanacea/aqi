@@ -18,14 +18,15 @@ export default class CityCompare extends React.Component {
   }
   tabChange = (key) => {
     this.setState({ tab: key });
+    const { date_array, city1, city2, date_unit } = this.props;
+    BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], key, city1, BaseStore.type.CITY1);
+    BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], key, city2, BaseStore.type.CITY2);
   }
 
   componentWillReceiveProps(nextProps) {
     const { date_array, city1, city2, date_unit } = nextProps;
     BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], this.state.tab, city1, BaseStore.type.CITY1);
-    BaseStore.fetchCityQuality(date_unit, date_array[0], date_array[date_array.length - 1], city1, BaseStore.type.CITY1);
     BaseStore.fetchCityDetail(date_unit, date_array[0], date_array[date_array.length - 1], this.state.tab, city2, BaseStore.type.CITY2);
-    BaseStore.fetchCityQuality(date_unit, date_array[0], date_array[date_array.length - 1], city2, BaseStore.type.CITY2);
   }
 
   renderContent = (date_array, city1, city2, date_unit) => {
@@ -146,7 +147,7 @@ export default class CityCompare extends React.Component {
         {
           type: 'pie',
           radius: [0, '50%'],
-          data: city === this.props.city1 ? BaseStore.cityQualityDetail1.slice() : BaseStore.cityQualityDetail2.slice(),
+          data: city === this.props.city1 ? BaseStore.risksMap1.slice() : BaseStore.risksMap2.slice(),
         },
       ],
     };
@@ -157,27 +158,22 @@ export default class CityCompare extends React.Component {
   render() {
     const { date_array, city1, city2, date_unit } = this.props;
     return (
-      <Tabs defaultActiveKey="AQI" onChange={this.tabChange} type="card">
+      <Tabs defaultActiveKey={this.state.tab} onChange={this.tabChange} type="card">
         <TabPane tab="AQHI" key="aqi">
           <Row>
-            <Col span={18}>
+            <Col span={24}>
               <ReactEcharts
                 option={this.getLineOption(date_array, city1, city2, date_unit)}
               />
             </Col>
-            <Col span={6}>
+          </Row>
+          <Row style={{ marginTop: '20px' }}>
+            <Col span={12}>
               <ReactEcharts
                 option={this.getPieOption(city1, date_unit)}
               />
             </Col>
-          </Row>
-          <Row style={{ marginTop: '20px' }}>
-            <Col span={16}>
-              <ReactEcharts
-                option={this.getBarOption(city1, city2, date_unit)}
-              />
-            </Col>
-            <Col span={8}>
+            <Col span={12}>
               <ReactEcharts
                 option={this.getPieOption(city2, date_unit)}
               />

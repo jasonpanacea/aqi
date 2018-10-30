@@ -48,6 +48,38 @@ class AQHITransformer {
       return quality.toUpperCase();
     }
   }
+
+  getMaxValue(quality) {
+    if (quality === 'aqi') { 
+      return 15; 
+    } if (quality === 'pm25') { 
+      return 200; 
+    } if (quality === 'pm10') {
+      return 200; 
+    } if (quality === 'so2') { 
+      return 18; 
+    } if (quality === 'no2') { 
+      return 100; 
+    } if (quality === 'co') { 
+      return 2; 
+    } if (quality === 'o3') { 
+      return 200; 
+    } 
+  }
+
+  getLabelColor(quality, val) {
+    const max = this.getMaxValue(quality);
+    if (val <= max / 4) {
+      return '#32f43e';
+    }
+    if (val <= max / 4 * 2) {
+      return '#e4f33e';
+    }
+    if (val <= max / 4 * 3) {
+      return '#f60003';
+    } 
+    return '#9f034c';
+  }
   
 
 }

@@ -63,7 +63,7 @@ export default class CityRank extends React.Component {
                       title="城市"
                       dataIndex="city"
                       key="city"
-                      width={110}
+                      width={140}
                     />
                     <Column
                       title="省份"

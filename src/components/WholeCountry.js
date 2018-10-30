@@ -39,9 +39,10 @@ export default class WholeCountry extends React.Component {
 
 
   getOption = (center = [104.114129, 37.550339], zoomLevel = 5) => {
+    const quality_unit = this.props.quality_unit;
     const option = {
       title: {
-        text: `全国主要城市${AQHITransformer.transformQualityUnitText(this.props.quality_unit)}`,
+        text: `全国主要城市${AQHITransformer.transformQualityUnitText(quality_unit)}`,
         left: 'center',
       },
       tooltip: {
@@ -113,19 +114,7 @@ export default class WholeCountry extends React.Component {
           itemStyle: {
             normal: {
               color(val) {
-                if (val.data.value[3] === '优良') {
-                  return '#32f43e';
-                } else if (val.data.value[3] === '良') {
-                  return '#e4f33e';
-                } else if (val.data.value[3] === '轻度污染') {
-                  return '#e4993c';
-                } else if (val.data.value[3] === '中度污染') {
-                  return '#f60003';
-                } else if (val.data.value[3] === '重度污染') {
-                  return '#9f034c';
-                } else if (val.data.value[3] === '严重污染') {
-                  return '#800025';
-                }
+                return AQHITransformer.getLabelColor(quality_unit, val.data.value[2]);
               },
             },
           },
@@ -200,7 +189,7 @@ export default class WholeCountry extends React.Component {
           </Button>,
           ]}
         >
-          <p>{this.cityValue[3]}</p>
+          {/* <p>{this.cityValue[3]}</p> */}
           <p>Card content</p>
           <p>Card content</p>
         </Card>

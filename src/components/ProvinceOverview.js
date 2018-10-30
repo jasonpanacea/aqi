@@ -34,7 +34,7 @@ export default class ProvinceOverview extends React.Component {
       },
       visualMap: {
         min: 0,
-        max: _.max(BaseStore.provinceList.slice().map(x => x.value)),
+        max: AQHITransformer.getMaxValue(this.props.quality_unit),
         splitNumber: 5,
         precision: 0,
         color: ['#d94e5d', '#eac736', '#50a3ba'],

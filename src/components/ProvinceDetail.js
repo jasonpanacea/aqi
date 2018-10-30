@@ -40,6 +40,7 @@ import 'echarts/map/js/province/yunnan.js';
 import 'echarts/map/js/province/zhejiang.js';
 
 import BaseStore from '../stores/BaseStore';
+import AQHITransformer from '../utils/AQHITransformer';
 
 @withRouter
 @observer
@@ -61,7 +62,7 @@ export default class ProvinceDetail extends React.Component {
       },
       visualMap: {
         min: 0,
-        max: 20,
+        max: AQHITransformer.getMaxValue(this.props.quality_unit),
         text: ['High', 'Low'],
         realtime: false,
         calculable: true,

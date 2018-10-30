@@ -9,6 +9,7 @@ import {
   
 import RegionStore from './RegionStore';
 import AQHITransformer from '../utils/AQHITransformer';
+import ProvinceNameUtil from '../utils/ProvinceNameUtil';
 
 class BaseStore {
     @observable initial = true;
@@ -36,6 +37,9 @@ class BaseStore {
     @computed get ready() {
       return !this.initial && !this.loading;
     }
+    @observable risksMap = [{ name: '低风险', value: 0 }, { name: '中风险', value: 0 }, { name: '高风险', value: 0 }, { name: '极高风险', value: 0 }];
+    @observable risksMap1 = [{ name: '低风险', value: 0 }, { name: '中风险', value: 0 }, { name: '高风险', value: 0 }, { name: '极高风险', value: 0 }];
+    @observable risksMap2 = [{ name: '低风险', value: 0 }, { name: '中风险', value: 0 }, { name: '高风险', value: 0 }, { name: '极高风险', value: 0 }];
 
   set detailCity(city) {
     this.detailCity = city;
@@ -413,7 +417,7 @@ class BaseStore {
                   const y = o3List[i];
                   const aqhi = AQHITransformer.caculateAQHI(Math.round(x.values[0][1]), Math.round(y.values[0][1]));
                   tempList.push({
-                    name: x.tags.province[0].substring(0, x.tags.province[0].length - 1), 
+                    name: ProvinceNameUtil.formatProvinceName(x.tags.province[0]), 
                     value: aqhi,
                   });
                 }
@@ -422,7 +426,7 @@ class BaseStore {
                 const list = response.data.queries[0].results;
                 this.provinceList = list.map(x => (
                   { 
-                    name: x.tags.province[0].substring(0, x.tags.province[0].length - 1), 
+                    name: ProvinceNameUtil.formatProvinceName(x.tags.province[0]), 
                     value: Math.round(x.values[0][1]),
                   })
                 );
@@ -542,6 +546,7 @@ class BaseStore {
 
     @action fetchCityDetail(date_unit, start_date, end_date, name, cityName, type = this.type.SINGLE) {
       const query = this.buildCityDetailQuery(date_unit, start_date, end_date, name, cityName);
+      
       let date_format = 'YYYY-MM-DD HH';
       if (date_unit === '日') { date_format = 'YYYY-MM-DD'; } else if (date_unit === '月') { date_format = 'YYYY-MM'; }
       axios.post(this.url, query)
@@ -559,21 +564,35 @@ class BaseStore {
             const aqhi = AQHITransformer.caculateAQHI(Math.round(x[1]), Math.round(y[1]));
             tempList.push([moment(x[0]).format(date_format), aqhi]);
           }
+          const tempRisksMap = { 低风险: 0, 中风险: 0, 高风险: 0, 极高风险: 0 };
+          const riskText = ['低风险', '中风险', '高风险', '极高风险'];
           if (type === this.type.SINGLE) {
             if (sample_size) {
               this.cityDetail = tempList.map(x => x);
+              tempList.slice().forEach((x) => {
+                tempRisksMap[AQHITransformer.transformAQHI2Text(x[1])] += 1;
+              });
+              this.risksMap = riskText.map(x => ({ name: x, value: tempRisksMap[x] }));
             } else {
               this.cityDetail = [];
             }
           } else if (type === this.type.CITY1) {
             if (sample_size) {
-              this.cityDetail1 = tempList.splice();
+              this.cityDetail1 = tempList.map(x => x);
+              tempList.slice().forEach((x) => {
+                tempRisksMap[AQHITransformer.transformAQHI2Text(x[1])] += 1;
+              });
+              this.risksMap1 = riskText.map(x => ({ name: x, value: tempRisksMap[x] }));
             } else {
               this.cityDetail1 = [];
             }
           } else if (type === this.type.CITY2) {
             if (sample_size) {
-              this.cityDetail2 = tempList.splice();
+              this.cityDetail2 = tempList.map(x => x);
+              tempList.slice().forEach((x) => {
+                tempRisksMap[AQHITransformer.transformAQHI2Text(x[1])] += 1;
+              });
+              this.risksMap2 = riskText.map(x => ({ name: x, value: tempRisksMap[x] }));
             } else {
               this.cityDetail2 = [];
             }
@@ -582,19 +601,19 @@ class BaseStore {
           const list = response.data.queries[0].results;
           if (type === this.type.SINGLE) {
             if (sample_size) {
-              this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+              this.cityDetail = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
             } else {
               this.cityDetail = [];
             }
           } else if (type === this.type.CITY1) {
             if (sample_size) {
-              this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+              this.cityDetail1 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
             } else {
               this.cityDetail1 = [];
             }
           } else if (type === this.type.CITY2) {
             if (sample_size) {
-              this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1] / 10)]);
+              this.cityDetail2 = list[0].values.map(x => [moment(x[0]).format(date_format), Math.round(x[1])]);
             } else {
               this.cityDetail2 = [];
             }
