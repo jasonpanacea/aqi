@@ -13,7 +13,7 @@ class AQHITransformer {
       return '极高风险';
     }
   }
-  caculateAQHI(pm25, o3, beta = 0.000546444, ERMAX = 0.19) {
+  caculateAQHI(pm25, o3, beta = 0.000546444, ERMAX = 0.1) {
     const alpha = 0.000138508197369495;
     let aqhi = Math.pow(Math.E, alpha * pm25) - 1 + Math.pow(Math.E, beta * o3) - 1;
     aqhi /= ERMAX;
@@ -51,11 +51,11 @@ class AQHITransformer {
 
   getMaxValue(quality) {
     if (quality === 'aqi') { 
-      return 15; 
+      return 10; 
     } if (quality === 'pm25') { 
-      return 200; 
+      return 150; 
     } if (quality === 'pm10') {
-      return 200; 
+      return 150; 
     } if (quality === 'so2') { 
       return 18; 
     } if (quality === 'no2') { 
@@ -68,6 +68,18 @@ class AQHITransformer {
   }
 
   getLabelColor(quality, val) {
+    if (quality === 'aqi') {
+      if (val === 1) { return '#58FA58'; }
+      if (val === 2) { return '#31B404'; }
+      if (val === 3) { return '#0B610B'; }
+      if (val === 4) { return '#F3F781'; }
+      if (val === 5) { return '#FFFF00'; }
+      if (val === 6) { return '#D7DF01'; }
+      if (val === 7) { return '#F78181'; }
+      if (val === 8) { return '#FE2E2E'; }
+      if (val === 9) { return '#610B0B'; }
+      if (val === 10) { return '#3B0B0B'; }
+    }
     const max = this.getMaxValue(quality);
     if (val <= max / 4) {
       return '#32f43e';
