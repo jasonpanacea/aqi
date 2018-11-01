@@ -73,10 +73,10 @@ export default class CityRank extends React.Component {
                     />
                     <Column
                       title="AQHI"
-                      dataIndex="aqi"
-                      key="aqi"
+                      dataIndex="aqhi"
+                      key="aqhi"
                       width={80}
-                      sorter={(a, b) => a.aqi - b.aqi}
+                      sorter={(a, b) => a.aqhi - b.aqhi}
                     />
                     <Column
                       title={<SubItemComponent pollution="PM" sub="2.5" />}
@@ -127,10 +127,10 @@ export default class CityRank extends React.Component {
                     />
                     <Column
                       title="AQHI"
-                      dataIndex="aqi"
-                      key="aqi"
+                      dataIndex="aqhi"
+                      key="aqhi"
                       width={90}
-                      sorter={(a, b) => a.aqi - b.aqi}
+                      sorter={(a, b) => a.aqhi - b.aqhi}
                     />
                     <Column
                       title={<SubItemComponent pollution="PM" sub="2.5" />}

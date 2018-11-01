@@ -219,7 +219,7 @@ export default class TimeGrid extends React.Component {
       this.setState({ playing: true });
       this.timer = setInterval(
         () => this.play(),
-        1000
+        3000
       );
     }
   }
@@ -246,7 +246,7 @@ export default class TimeGrid extends React.Component {
               <Radio value={'日'}>日</Radio>
               <Radio value={'月'}>月</Radio>
             </RadioGroup>
-            <RangePicker style={{ maxWidth: '300px' }} onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
+            <RangePicker allowClear={false} style={{ maxWidth: '300px' }} onChange={this.onDateChange} defaultValue={this.state.default_range} value={this.state.date_range} format={this.state.date_range_format} showTime={this.state.date_range_show_time} />
             
           </Col>
           {

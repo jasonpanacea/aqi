@@ -50,7 +50,7 @@ export default class ProvinceDetail extends React.Component {
     const option = {
       backgroundColor: '#264a69',
       title: {
-        text: `${this.props.match.params.name}AQHI`,
+        text: `${this.props.match.params.name+AQHITransformer.transformQualityUnitText(this.props.match.params.quality_unit)}`,
         x: 'center',
         textStyle: {
           color: '#fff',
@@ -58,16 +58,16 @@ export default class ProvinceDetail extends React.Component {
       },
       tooltip: {
         trigger: 'item',
-        formatter: `{b}<br/>${this.props.match.params.quality_unit}: {c}`,
+        formatter: `{b}<br/>${AQHITransformer.transformQualityUnitText(this.props.match.params.quality_unit)}: {c}`,
       },
       visualMap: {
         min: 0,
-        max: AQHITransformer.getMaxValue(this.props.quality_unit),
-        text: ['High', 'Low'],
-        realtime: false,
-        calculable: true,
-        inRange: {
-          color: ['lightskyblue', 'yellow', 'orangered'],
+        max: AQHITransformer.getMaxValue(this.props.match.params.quality_unit),
+        splitNumber: 5,
+        precision: 0,
+        color: ['#d94e5d', '#eac736', '#50a3ba'],
+        textStyle: {
+          color: '#fff',
         },
       },
       series: [

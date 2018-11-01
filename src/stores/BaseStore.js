@@ -319,45 +319,111 @@ class BaseStore {
     } else {
       province += '省';
     }
-    const query = {
-      metrics: [
-        {
-          tags: {
-            province: [
-              province,
-            ],
-          },
-          name,
-          group_by: [
-            {
-              name: 'tag',
-              tags: [
-                group_tag,
+    let query;
+    if (name === 'aqi') {
+      query = {
+        metrics: [
+          {
+            tags: {
+              province: [
+                province,
               ],
             },
-          ],
-          aggregators: [
-            {
-              name: 'avg',
-              sampling: {
-                value: '1',
-                unit: params[2],
+            name: 'pm25',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  group_tag,
+                ],
               },
-              align_start_time: true,
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+          {
+            tags: {
+              province: [
+                province,
+              ],
             },
-          ],
-        },
-      ],
-      plugins: [],
-      cache_time: 0,
-      start_absolute: params[0],
-      end_absolute: params[1],
-    };
+            name: 'o3',
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  group_tag,
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_sampling: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    } else {
+      query = {
+        metrics: [
+          {
+            tags: {
+              province: [
+                province,
+              ],
+            },
+            name,
+            group_by: [
+              {
+                name: 'tag',
+                tags: [
+                  group_tag,
+                ],
+              },
+            ],
+            aggregators: [
+              {
+                name: 'avg',
+                sampling: {
+                  value: '1',
+                  unit: params[2],
+                },
+                align_start_time: true,
+              },
+            ],
+          },
+        ],
+        plugins: [],
+        cache_time: 0,
+        start_absolute: params[0],
+        end_absolute: params[1],
+      };
+    }
+    
     return query;
   }
 
     @action fetchWholeCountry(date_unit, date_str, name = 'aqi') {
       this.loading = true;
+      this.wholeCountryList = [];
       
       const query = this.buildWholeCountryQuery(date_unit, date_str, name);
       axios.post(this.url, query)
@@ -400,7 +466,7 @@ class BaseStore {
 
     @action fetchProvinceList(date_unit, date_str, name = 'aqi') {
       this.loading = true;
-      
+      this.provinceList = [];
       const query = this.buildProvinceListQuery(date_unit, date_str, name);
       axios.post(this.url, query)
           .then((response) => {
@@ -441,20 +507,40 @@ class BaseStore {
     }
 
     @action fetchProvinceDetail(date_unit, date_str, name, provinceName) {
+      this.provinceDetail = [];
       const query = this.buildProvinceDetailQuery(date_unit, date_str, name, provinceName);
       axios.post(this.url, query)
       .then((response) => {
-        const list = response.data.queries[0].results;
+        
         const sample_size = response.data.queries[0].sample_size;
         this.loading = false;
         this.initial = false;
         if (sample_size) {
-          this.provinceDetail = list.map(x => (
-            { 
-              name: this.zxs.indexOf(provinceName) < 0 ? x.tags.city[0] : x.tags.district[0],
-              value: Math.round(x.values[0][1]),
-            })
-          );
+          if (name === 'aqi') {
+            const tempList = [];
+            const pm25List = response.data.queries[0].results;
+            const o3List = response.data.queries[1].results;
+            for (let i = 0; i < Math.min(pm25List.length, o3List.length); i += 1) {
+              const x = pm25List[i];
+              const y = o3List[i];
+              const aqhi = AQHITransformer.caculateAQHI(Math.round(x.values[0][1]), Math.round(y.values[0][1]));
+              tempList.push({
+                name: this.zxs.indexOf(provinceName) < 0 ? x.tags.city[0] : x.tags.district[0], 
+                value: aqhi,
+              });
+            }
+            this.provinceDetail = tempList.slice();
+          }
+          else {
+            const list = response.data.queries[0].results;
+            this.provinceDetail = list.map(x => (
+              { 
+                name: this.zxs.indexOf(provinceName) < 0 ? x.tags.city[0] : x.tags.district[0],
+                value: Math.round(x.values[0][1]),
+              })
+            );
+          }
+          
         } else {
           this.provinceDetail = [];
         }
@@ -708,7 +794,7 @@ class BaseStore {
         metrics: [
           {
             tags: {},
-            name: 'aqi',
+            name: 'o3',
             group_by: [
               {
                 name: 'tag',
@@ -724,7 +810,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -746,7 +832,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -768,7 +854,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -798,18 +884,18 @@ class BaseStore {
           rank.push({ 
             city: i, 
             province: res[i].province, 
-            aqi: Math.round(res[i].aqi / 10), 
+            aqhi: AQHITransformer.caculateAQHI(res[i].pm25, res[i].o3), 
             pm25: res[i].pm25, 
             pm10: res[i].pm10, 
           });
         }
-        rank.sort((a, b) => a.aqi - b.aqi);
+        rank.sort((a, b) => a.aqhi - b.aqhi);
         this.cityRank = rank.map((x, index) => ({
           key: index + 1,
           rank: index + 1,
           city: x.city, 
           province: x.province, 
-          aqi: x.aqi, 
+          aqhi: x.aqhi, 
           pm25: x.pm25, 
           pm10: x.pm10, 
         }));
@@ -824,7 +910,7 @@ class BaseStore {
         metrics: [
           {
             tags: {},
-            name: 'aqi',
+            name: 'o3',
             group_by: [
               {
                 name: 'tag',
@@ -840,7 +926,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -862,7 +948,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -884,7 +970,7 @@ class BaseStore {
                   value: '1',
                   unit: 'months',
                 },
-                align_start_time: true,
+                align_sampling: true,
               },
             ],
           },
@@ -911,18 +997,18 @@ class BaseStore {
         for (const i in res) {
           rank.push({ 
             province: i,
-            aqi: Math.round(res[i].aqi / 10), 
+            aqhi: AQHITransformer.caculateAQHI(res[i].pm25, res[i].o3),  
             pm25: res[i].pm25, 
             pm10: res[i].pm10, 
           });
         }
-        rank.sort((a, b) => a.aqi - b.aqi);
+        rank.sort((a, b) => a.aqhi - b.aqhi);
         this.provinceRank = rank.map((x, index) => ({
           key: index + 1,
           rank: index + 1,
           province: x.province, 
           city_count: RegionStore.cityCount[x.province],
-          aqi: x.aqi, 
+          aqhi: x.aqhi, 
           pm25: x.pm25, 
           pm10: x.pm10, 
         }));
